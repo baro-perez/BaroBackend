@@ -1,0 +1,6 @@
+@BaroBackend.Api_HostAddress = http://localhost:5048
+
+GET {{BaroBackend.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/BaroBackend.Api/BaroBackend.Api.csproj" />
+    <Project Path="src/BaroBackend.Domain/BaroBackend.Domain.csproj" />
+    <Project Path="src/BaroBackend.Infrastructure/BaroBackend.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/BaroBackend.Domain.Tests/BaroBackend.Domain.Tests.csproj" />
+  </Folder>
+</Solution>
