@@ -6,3 +6,7 @@ docker compose down -v
 
 :: Run api
 dotnet run --project src/BaroBackend.Api
+
+:: packages installed
+dotnet add src/BaroBackend.Api package Scalar.AspNetCore
+dotnet add src/BaroBackend.Api package Swashbuckle.AspNetCore.SwaggerUI

@@ -13,17 +13,27 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.MapScalarApiReference();
-    app.MapGet("/", () => Results.Redirect("/scalar/v1"))
-       .ExcludeFromDescription();
+
+    var docsUi = builder.Configuration["ApiDocs:Ui"];
+    switch (docsUi?.ToLowerInvariant())
+    {
+        default:
+        case "swagger":
+            {
+                app.UseSwaggerUI(o => o.SwaggerEndpoint("/openapi/v1.json", "BaroBackend v1"));
+                app.MapGet("/", () => Results.Redirect("/swagger")).ExcludeFromDescription();
+            }
+            break;
+        case "scalar":
+            {
+                app.MapScalarApiReference();
+                app.MapGet("/", () => Results.Redirect("/scalar/v1")).ExcludeFromDescription();
+            }
+            break;
+    }
 }
 
 app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
 
 app.MapGet("/ping", (TimeProvider time) =>
     {
