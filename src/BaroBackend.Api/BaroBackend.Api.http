@@ -1,6 +1,11 @@
 @BaroBackend.Api_HostAddress = http://localhost:5048
 
-GET {{BaroBackend.Api_HostAddress}}/weatherforecast/
+GET {{BaroBackend.Api_HostAddress}}/ping
+Accept: application/json
+
+###
+
+GET {{BaroBackend.Api_HostAddress}}/version
 Accept: application/json
 
 ###

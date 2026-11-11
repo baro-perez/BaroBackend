@@ -1,0 +1,8 @@
+:: Run server (-d: detached)
+docker compose up -d
+
+:: Tear down server (-v actually removes it, allowing new setting to go through)
+docker compose down -v
+
+:: Run api
+dotnet run --project src/BaroBackend.Api
