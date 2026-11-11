@@ -15,7 +15,7 @@ This is a (maybe non-exhaustive) log of the technologies used in this project
 - Npgsql
 - EF Core
 
-###Used on the developer/client side:
+### Used on the developer/client side:
 - Docker Desktop
 - DBeaver
 
@@ -30,3 +30,5 @@ This is a (maybe non-exhaustive) log of the technologies used in this project
 - Explored using configuration to switch between which UI is used
 
 ### Entities schema
+- Created the initial DB schema with Player, ResourceBalance and LedgerEntry
+- Tested the migration flow

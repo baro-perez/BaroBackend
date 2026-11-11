@@ -1,5 +1,6 @@
 using System;
 using Scalar.AspNetCore;
+using BaroBackend.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddSingleton(TimeProvider.System);
+
+var connectionString = builder.Configuration.GetConnectionString("Postgres")
+    ?? throw new InvalidOperationException("Missing connection string 'Postgres'.");
+builder.Services.AddInfrastructure(connectionString);
 
 var app = builder.Build();
 var appVersion = "0.1";
