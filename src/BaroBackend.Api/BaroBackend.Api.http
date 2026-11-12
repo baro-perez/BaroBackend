@@ -8,4 +8,14 @@ Accept: application/json
 GET {{BaroBackend.Api_HostAddress}}/version
 Accept: application/json
 
+### PlayerEndpoints
+
+POST {{BaroBackend.Api_HostAddress}}/players/
+Accept: application/json
+
+###
+
+GET {{BaroBackend.Api_HostAddress}}/players/{{id}}
+Accept: application/json
+
 ###

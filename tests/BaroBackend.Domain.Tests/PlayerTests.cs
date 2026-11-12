@@ -1,5 +1,5 @@
 ﻿using BaroBackend.Domain.Common;
-using BaroBackend.Domain.MetaGame;
+using BaroBackend.Domain.Metagame;
 
 namespace BaroBackend.Domain.Tests;
 

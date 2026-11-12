@@ -22,7 +22,7 @@ namespace BaroBackend.Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("BaroBackend.Domain.MetaGame.LedgerEntry", b =>
+            modelBuilder.Entity("BaroBackend.Domain.Metagame.LedgerEntry", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -66,7 +66,7 @@ namespace BaroBackend.Infrastructure.Persistence.Migrations
                     b.ToTable("ledger_entries", (string)null);
                 });
 
-            modelBuilder.Entity("BaroBackend.Domain.MetaGame.Player", b =>
+            modelBuilder.Entity("BaroBackend.Domain.Metagame.Player", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -93,7 +93,7 @@ namespace BaroBackend.Infrastructure.Persistence.Migrations
                     b.ToTable("players", (string)null);
                 });
 
-            modelBuilder.Entity("BaroBackend.Domain.MetaGame.ResourceBalance", b =>
+            modelBuilder.Entity("BaroBackend.Domain.Metagame.ResourceBalance", b =>
                 {
                     b.Property<Guid>("PlayerId")
                         .HasColumnType("uuid")
@@ -117,9 +117,9 @@ namespace BaroBackend.Infrastructure.Persistence.Migrations
                         });
                 });
 
-            modelBuilder.Entity("BaroBackend.Domain.MetaGame.LedgerEntry", b =>
+            modelBuilder.Entity("BaroBackend.Domain.Metagame.LedgerEntry", b =>
                 {
-                    b.HasOne("BaroBackend.Domain.MetaGame.Player", null)
+                    b.HasOne("BaroBackend.Domain.Metagame.Player", null)
                         .WithMany()
                         .HasForeignKey("PlayerId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -127,9 +127,9 @@ namespace BaroBackend.Infrastructure.Persistence.Migrations
                         .HasConstraintName("fk_ledger_entries_players_player_id");
                 });
 
-            modelBuilder.Entity("BaroBackend.Domain.MetaGame.ResourceBalance", b =>
+            modelBuilder.Entity("BaroBackend.Domain.Metagame.ResourceBalance", b =>
                 {
-                    b.HasOne("BaroBackend.Domain.MetaGame.Player", null)
+                    b.HasOne("BaroBackend.Domain.Metagame.Player", null)
                         .WithMany("Balances")
                         .HasForeignKey("PlayerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -137,7 +137,7 @@ namespace BaroBackend.Infrastructure.Persistence.Migrations
                         .HasConstraintName("fk_resource_balances_players_player_id");
                 });
 
-            modelBuilder.Entity("BaroBackend.Domain.MetaGame.Player", b =>
+            modelBuilder.Entity("BaroBackend.Domain.Metagame.Player", b =>
                 {
                     b.Navigation("Balances");
                 });

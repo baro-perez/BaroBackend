@@ -1,4 +1,4 @@
-﻿namespace BaroBackend.Domain.MetaGame;
+﻿namespace BaroBackend.Domain.Metagame;
 
 public static class Resources
 {

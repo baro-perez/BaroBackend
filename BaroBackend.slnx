@@ -6,5 +6,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/BaroBackend.Domain.Tests/BaroBackend.Domain.Tests.csproj" />
+    <Project Path="tests/BaroBackend.Api.Tests/BaroBackend.Api.Tests.csproj" />
+    <Project Path="tests/BaroBackend.Infrastructure.Tests/BaroBackend.Infrastructure.Tests.csproj" />
   </Folder>
 </Solution>

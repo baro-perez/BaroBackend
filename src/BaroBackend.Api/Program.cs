@@ -1,8 +1,11 @@
-using System;
-using Scalar.AspNetCore;
+using BaroBackend.Api;
 using BaroBackend.Infrastructure;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<DomainExceptionHandler>();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -14,6 +17,8 @@ var connectionString = builder.Configuration.GetConnectionString("Postgres")
 builder.Services.AddInfrastructure(connectionString);
 
 var app = builder.Build();
+app.UseExceptionHandler();
+
 var appVersion = "0.1";
 
 // Configure the HTTP request pipeline.
@@ -75,6 +80,8 @@ app.MapGet("/version", (TimeProvider time) =>
         name = "BaroBackend",
         version = appVersion
     }));
+
+PlayerEndpoints.MapPlayerEndpoints(app, app.Environment);
 
 app.Run();
 

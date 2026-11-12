@@ -1,4 +1,4 @@
-﻿using BaroBackend.Domain.MetaGame;
+﻿using BaroBackend.Domain.Metagame;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

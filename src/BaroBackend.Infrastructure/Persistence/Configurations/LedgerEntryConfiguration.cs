@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using BaroBackend.Domain.MetaGame;
+using BaroBackend.Domain.Metagame;
 
 namespace BaroBackend.Infrastructure.Persistence.Configurations;
 

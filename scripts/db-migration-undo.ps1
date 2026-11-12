@@ -2,7 +2,7 @@
 .SYNOPSIS
   Remove the last EF Core migration into BaroBackend.Infrastructure.
 .EXAMPLE
-  ./scripts/db-migration.ps1
+  ./scripts/db-migration-undo.ps1
 #>
   
 $root = Split-Path -Parent $PSScriptRoot
