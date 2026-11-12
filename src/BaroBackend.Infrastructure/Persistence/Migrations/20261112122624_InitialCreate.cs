@@ -11,12 +11,15 @@ namespace BaroBackend.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterDatabase()
+                .Annotation("Npgsql:PostgresExtension:citext", ",,");
+
             migrationBuilder.CreateTable(
                 name: "players",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    name = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
+                    name = table.Column<string>(type: "citext", maxLength: 32, nullable: false),
                     created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
@@ -51,8 +54,8 @@ namespace BaroBackend.Infrastructure.Persistence.Migrations
                 name: "resource_balances",
                 columns: table => new
                 {
-                    player_id = table.Column<Guid>(type: "uuid", nullable: false),
                     resource_id = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    player_id = table.Column<Guid>(type: "uuid", nullable: false),
                     amount = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>

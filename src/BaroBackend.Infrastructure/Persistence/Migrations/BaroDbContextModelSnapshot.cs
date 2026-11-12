@@ -20,6 +20,7 @@ namespace BaroBackend.Infrastructure.Persistence.Migrations
                 .HasAnnotation("ProductVersion", "10.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "citext");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("BaroBackend.Domain.Metagame.LedgerEntry", b =>
@@ -79,8 +80,7 @@ namespace BaroBackend.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)")
+                        .HasColumnType("citext")
                         .HasColumnName("name");
 
                     b.HasKey("Id")
@@ -90,30 +90,9 @@ namespace BaroBackend.Infrastructure.Persistence.Migrations
                         .IsUnique()
                         .HasDatabaseName("ix_players_name");
 
-                    b.ToTable("players", (string)null);
-                });
-
-            modelBuilder.Entity("BaroBackend.Domain.Metagame.ResourceBalance", b =>
-                {
-                    b.Property<Guid>("PlayerId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("player_id");
-
-                    b.Property<string>("ResourceId")
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)")
-                        .HasColumnName("resource_id");
-
-                    b.Property<long>("Amount")
-                        .HasColumnType("bigint")
-                        .HasColumnName("amount");
-
-                    b.HasKey("PlayerId", "ResourceId")
-                        .HasName("pk_resource_balances");
-
-                    b.ToTable("resource_balances", null, t =>
+                    b.ToTable("players", null, t =>
                         {
-                            t.HasCheckConstraint("ck_resource_balances_amount_non_negative", "amount >= 0");
+                            t.HasCheckConstraint("ck_players_name_length", "char_length(name) between 3 and 32");
                         });
                 });
 
@@ -127,18 +106,36 @@ namespace BaroBackend.Infrastructure.Persistence.Migrations
                         .HasConstraintName("fk_ledger_entries_players_player_id");
                 });
 
-            modelBuilder.Entity("BaroBackend.Domain.Metagame.ResourceBalance", b =>
-                {
-                    b.HasOne("BaroBackend.Domain.Metagame.Player", null)
-                        .WithMany("Balances")
-                        .HasForeignKey("PlayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_resource_balances_players_player_id");
-                });
-
             modelBuilder.Entity("BaroBackend.Domain.Metagame.Player", b =>
                 {
+                    b.OwnsMany("BaroBackend.Domain.Metagame.ResourceBalance", "Balances", b1 =>
+                        {
+                            b1.Property<Guid>("PlayerId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("player_id");
+
+                            b1.Property<string>("ResourceId")
+                                .HasMaxLength(64)
+                                .HasColumnType("character varying(64)")
+                                .HasColumnName("resource_id");
+
+                            b1.Property<long>("Amount")
+                                .HasColumnType("bigint")
+                                .HasColumnName("amount");
+
+                            b1.HasKey("PlayerId", "ResourceId")
+                                .HasName("pk_resource_balances");
+
+                            b1.ToTable("resource_balances", null, t =>
+                                {
+                                    t.HasCheckConstraint("ck_resource_balances_amount_non_negative", "amount >= 0");
+                                });
+
+                            b1.WithOwner()
+                                .HasForeignKey("PlayerId")
+                                .HasConstraintName("fk_resource_balances_players_player_id");
+                        });
+
                     b.Navigation("Balances");
                 });
 #pragma warning restore 612, 618

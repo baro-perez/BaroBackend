@@ -7,6 +7,7 @@ public sealed class Player
     public Guid Id { get; private set; }
     public string Name { get; private set; } = null!;
     public DateTimeOffset CreatedAt { get; private set; }
+
     public IReadOnlyCollection<ResourceBalance> Balances => balances;
 
     private readonly List<ResourceBalance> balances = [];
@@ -45,7 +46,7 @@ public sealed class Player
         var balance = balances.FirstOrDefault(b => b.ResourceId == resourceId);
         if (balance is null)
         {
-            balance = new ResourceBalance(Id, resourceId);
+            balance = new ResourceBalance(resourceId);
             balances.Add(balance);
         }
 

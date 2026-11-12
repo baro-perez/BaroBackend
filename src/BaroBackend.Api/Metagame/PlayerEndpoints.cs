@@ -7,18 +7,21 @@ using Npgsql;
 public static class PlayerEndpoints
 {
     private const string GetPlayerRoute = "/{id:guid}";
+    private const string GetPlayerBalanceRoute = "/{id:guid}/balances";
 
     public static void MapPlayerEndpoints(
         IEndpointRouteBuilder app,
         IWebHostEnvironment environment)
     {
         var group = app.MapGroup("/players").WithTags("Players");
-        group.MapPost("/", CreatePlayer);
-        group.MapPost(GetPlayerRoute, GetPlayer);
 
+        group.MapGet(GetPlayerRoute, GetPlayer);
+        group.MapPost("/", CreatePlayer);
+
+        group.MapGet(GetPlayerBalanceRoute, GetPlayerBalance);
         if (environment.IsDevelopment())
         {
-
+            //group.MapPost(GetPlayerBalanceRoute + "/grants", GrantBalanceToPlayer);
         }
     }
 
@@ -30,7 +33,7 @@ public static class PlayerEndpoints
         var player = await db.Players.AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == playerId, ct);
         return player != null ?
-            Results.Ok(PlayerResponse.FromPlayer(player)) :
+            Results.Ok(PlayerResponse.From(player)) :
             Results.NotFound();
     }
 
@@ -60,6 +63,31 @@ public static class PlayerEndpoints
         return Results.CreatedAtRoute(
             GetPlayerRoute,
             new {id = newPlayer.Id },
-            PlayerResponse.FromPlayer(newPlayer));
+            PlayerResponse.From(newPlayer));
+    }
+
+    private static async Task<IResult> GetPlayerBalance(
+        Guid playerId,
+        BaroDbContext db,
+        CancellationToken ct)
+    {
+        return Results.Forbid();
+        /*var player = await db.Players
+            .AsNoTracking()
+            .Where(p => p.Id == playerId)
+            .FirstOrDefaultAsync(ct);
+
+        if (player == null)
+        {
+            return Results.NotFound();
+        }
+
+        var balances = await player.Balances
+            .Select(ResourceBalanceResponse.From)
+            .ToListAsync(ct);
+
+        return player != null ?
+            Results.Ok(balances) :
+            Results.NotFound();*/
     }
 }

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BaroBackend.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(BaroDbContext))]
-    [Migration("20261111150356_InitialCreate")]
+    [Migration("20261112122624_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -23,9 +23,10 @@ namespace BaroBackend.Infrastructure.Persistence.Migrations
                 .HasAnnotation("ProductVersion", "10.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "citext");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("BaroBackend.Domain.MetaGame.LedgerEntry", b =>
+            modelBuilder.Entity("BaroBackend.Domain.Metagame.LedgerEntry", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -69,7 +70,7 @@ namespace BaroBackend.Infrastructure.Persistence.Migrations
                     b.ToTable("ledger_entries", (string)null);
                 });
 
-            modelBuilder.Entity("BaroBackend.Domain.MetaGame.Player", b =>
+            modelBuilder.Entity("BaroBackend.Domain.Metagame.Player", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -83,7 +84,7 @@ namespace BaroBackend.Infrastructure.Persistence.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("character varying(32)")
+                        .HasColumnType("citext")
                         .HasColumnName("name");
 
                     b.HasKey("Id")
@@ -96,33 +97,9 @@ namespace BaroBackend.Infrastructure.Persistence.Migrations
                     b.ToTable("players", (string)null);
                 });
 
-            modelBuilder.Entity("BaroBackend.Domain.MetaGame.ResourceBalance", b =>
+            modelBuilder.Entity("BaroBackend.Domain.Metagame.LedgerEntry", b =>
                 {
-                    b.Property<Guid>("PlayerId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("player_id");
-
-                    b.Property<string>("ResourceId")
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)")
-                        .HasColumnName("resource_id");
-
-                    b.Property<long>("Amount")
-                        .HasColumnType("bigint")
-                        .HasColumnName("amount");
-
-                    b.HasKey("PlayerId", "ResourceId")
-                        .HasName("pk_resource_balances");
-
-                    b.ToTable("resource_balances", null, t =>
-                        {
-                            t.HasCheckConstraint("ck_resource_balances_amount_non_negative", "amount >= 0");
-                        });
-                });
-
-            modelBuilder.Entity("BaroBackend.Domain.MetaGame.LedgerEntry", b =>
-                {
-                    b.HasOne("BaroBackend.Domain.MetaGame.Player", null)
+                    b.HasOne("BaroBackend.Domain.Metagame.Player", null)
                         .WithMany()
                         .HasForeignKey("PlayerId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -130,18 +107,36 @@ namespace BaroBackend.Infrastructure.Persistence.Migrations
                         .HasConstraintName("fk_ledger_entries_players_player_id");
                 });
 
-            modelBuilder.Entity("BaroBackend.Domain.MetaGame.ResourceBalance", b =>
+            modelBuilder.Entity("BaroBackend.Domain.Metagame.Player", b =>
                 {
-                    b.HasOne("BaroBackend.Domain.MetaGame.Player", null)
-                        .WithMany("Balances")
-                        .HasForeignKey("PlayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_resource_balances_players_player_id");
-                });
+                    b.OwnsMany("BaroBackend.Domain.Metagame.ResourceBalance", "Balances", b1 =>
+                        {
+                            b1.Property<Guid>("PlayerId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("player_id");
 
-            modelBuilder.Entity("BaroBackend.Domain.MetaGame.Player", b =>
-                {
+                            b1.Property<string>("ResourceId")
+                                .HasMaxLength(64)
+                                .HasColumnType("character varying(64)")
+                                .HasColumnName("resource_id");
+
+                            b1.Property<long>("Amount")
+                                .HasColumnType("bigint")
+                                .HasColumnName("amount");
+
+                            b1.HasKey("PlayerId", "ResourceId")
+                                .HasName("pk_resource_balances");
+
+                            b1.ToTable("resource_balances", null, t =>
+                                {
+                                    t.HasCheckConstraint("ck_resource_balances_amount_non_negative", "amount >= 0");
+                                });
+
+                            b1.WithOwner()
+                                .HasForeignKey("PlayerId")
+                                .HasConstraintName("fk_resource_balances_players_player_id");
+                        });
+
                     b.Navigation("Balances");
                 });
 #pragma warning restore 612, 618
