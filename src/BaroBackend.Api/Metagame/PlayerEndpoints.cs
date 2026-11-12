@@ -1,13 +1,20 @@
+using System.Timers;
+
 using BaroBackend.Api.Metagame.EndpointDtos;
 using BaroBackend.Domain.Metagame;
 using BaroBackend.Infrastructure.Persistence;
+
 using Microsoft.EntityFrameworkCore;
+
 using Npgsql;
+
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 public static class PlayerEndpoints
 {
     private const string GetPlayerRoute = "/{id:guid}";
     private const string GetPlayerBalanceRoute = "/{id:guid}/balances";
+    private const string DevToolContext = "dev_tool";
 
     public static void MapPlayerEndpoints(
         IEndpointRouteBuilder app,
@@ -21,7 +28,14 @@ public static class PlayerEndpoints
         group.MapGet(GetPlayerBalanceRoute, GetPlayerBalance);
         if (environment.IsDevelopment())
         {
-            //group.MapPost(GetPlayerBalanceRoute + "/grants", GrantBalanceToPlayer);
+            group.MapPost(GetPlayerBalanceRoute + "/grants",
+                (Guid playerId,
+                ResourceAndAmount data,
+                BaroDbContext db,
+                TimeProvider time,
+                CancellationToken ct) =>
+                ModifyResourceByDelta(playerId, data, DevToolContext,
+                    db, time, ct));
         }
     }
 
@@ -71,23 +85,44 @@ public static class PlayerEndpoints
         BaroDbContext db,
         CancellationToken ct)
     {
-        return Results.Forbid();
-        /*var player = await db.Players
+        var player = await db.Players
             .AsNoTracking()
-            .Where(p => p.Id == playerId)
-            .FirstOrDefaultAsync(ct);
+            .FirstOrDefaultAsync(p => p.Id == playerId, ct);
 
-        if (player == null)
+        if (player is null)
         {
             return Results.NotFound();
         }
 
-        var balances = await player.Balances
+        var balances = player.Balances
             .Select(ResourceBalanceResponse.From)
-            .ToListAsync(ct);
+            .ToArray();
 
-        return player != null ?
-            Results.Ok(balances) :
-            Results.NotFound();*/
+        return Results.Ok(balances);
+    }
+
+    private static async Task<IResult> ModifyResourceByDelta(
+        Guid playerId,
+        ResourceAndAmount data,
+        string context,
+        BaroDbContext db,
+        TimeProvider time,
+        CancellationToken ct)
+    {
+        var player = await db.Players
+            .FindAsync([playerId], ct);
+
+        if (player is null)
+        {
+            return Results.NotFound();
+        }
+
+        var now = time.GetUtcNow();
+        var ledgerEntry = player.ApplyResourceDelta(data.ResourceId,
+            data.Amount, now, context);
+
+        db.LedgerEntries.Add(ledgerEntry);
+        await db.SaveChangesAsync(ct);
+        return Results.Ok(LedgerEntryResponse.From(ledgerEntry));
     }
 }

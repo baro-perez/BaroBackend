@@ -1,11 +1,14 @@
 using BaroBackend.Api;
+using BaroBackend.Domain.Common;
 using BaroBackend.Infrastructure;
+
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddProblemDetails();
-builder.Services.AddExceptionHandler<DomainExceptionHandler>();
+builder.Services.AddExceptionHandler<ExceptionHandler<ApiException>>();
+builder.Services.AddExceptionHandler<ExceptionHandler<DomainException>>();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -18,6 +21,7 @@ builder.Services.AddInfrastructure(connectionString);
 
 var app = builder.Build();
 app.UseExceptionHandler();
+app.UseStatusCodePages();
 
 var appVersion = "0.1";
 
@@ -81,7 +85,7 @@ app.MapGet("/version", (TimeProvider time) =>
         version = appVersion
     }));
 
-PlayerEndpoints.MapPlayerEndpoints(app, app.Environment);
+PlayerEndpoints.MapPlayerEndpoints(app, app.Environment)
 
 app.Run();
 

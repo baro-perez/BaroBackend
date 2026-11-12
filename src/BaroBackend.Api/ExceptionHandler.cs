@@ -4,9 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BaroBackend.Api;
 
-public sealed class DomainExceptionHandler(
+public class ExceptionHandler<T>(
     IProblemDetailsService problemDetailsService) :
     IExceptionHandler
+    where T : Exception
 {
     public async ValueTask<bool> TryHandleAsync(
         HttpContext context,

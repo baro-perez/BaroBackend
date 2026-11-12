@@ -1,7 +1,5 @@
 using BaroBackend.Domain.Metagame;
 
-using Microsoft.AspNetCore.Http.HttpResults;
-
 namespace BaroBackend.Api.Metagame.EndpointDtos;
 
 public sealed record PlayerResponse(Guid Id, string Name, DateTimeOffset CreatedAt)
