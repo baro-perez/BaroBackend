@@ -27,7 +27,7 @@ public static class PlayerEndpoints
         group.MapGet(GetPlayerBalanceRoute, GetPlayerBalance).WithName(nameof(GetPlayerBalanceRoute));
         if (environment.IsDevelopment())
         {
-            group.MapPost(GetPlayerBalanceRoute + "/grants",
+            group.MapPost(GetPlayerBalanceRoute + "/modify",
                 (Guid playerId,
                 ResourceAndAmount data,
                 BaroDbContext db,

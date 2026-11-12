@@ -30,7 +30,7 @@ public sealed class Player
         };
     }
 
-    public long GetBalance(string resourceId)
+    public long GetResourceAmount(string resourceId)
     {
         return balances.FirstOrDefault(b => b.ResourceId == resourceId)?.Amount ?? 0;
     }
