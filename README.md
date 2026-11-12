@@ -34,3 +34,4 @@ This is a (maybe non-exhaustive) log of the technologies used in this project
 - Implemented first POST and GET endpoints for Players and ResourceBalances
 - Tested the migration flow
 - Tweaked table constrains, added citext column, understood owned table relations
+- Implemented tests for the Api (Player endpoints)
