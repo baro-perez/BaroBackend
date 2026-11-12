@@ -85,7 +85,7 @@ app.MapGet("/version", (TimeProvider time) =>
         version = appVersion
     }));
 
-PlayerEndpoints.MapPlayerEndpoints(app, app.Environment)
+PlayerEndpoints.MapPlayerEndpoints(app, app.Environment);
 
 app.Run();
 

@@ -4,16 +4,15 @@ using BaroBackend.Api.Metagame.EndpointDtos;
 using BaroBackend.Domain.Metagame;
 using BaroBackend.Infrastructure.Persistence;
 
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 using Npgsql;
 
-using static System.Runtime.InteropServices.JavaScript.JSType;
-
 public static class PlayerEndpoints
 {
-    private const string GetPlayerRoute = "/{id:guid}";
-    private const string GetPlayerBalanceRoute = "/{id:guid}/balances";
+    private const string GetPlayerRoute = "/{playerId:guid}";
+    private const string GetPlayerBalanceRoute = GetPlayerRoute + "/balances";
     private const string DevToolContext = "dev_tool";
 
     public static void MapPlayerEndpoints(
@@ -22,10 +21,10 @@ public static class PlayerEndpoints
     {
         var group = app.MapGroup("/players").WithTags("Players");
 
-        group.MapGet(GetPlayerRoute, GetPlayer);
+        group.MapGet(GetPlayerRoute, GetPlayer).WithName(nameof(GetPlayerRoute));
         group.MapPost("/", CreatePlayer);
 
-        group.MapGet(GetPlayerBalanceRoute, GetPlayerBalance);
+        group.MapGet(GetPlayerBalanceRoute, GetPlayerBalance).WithName(nameof(GetPlayerBalanceRoute));
         if (environment.IsDevelopment())
         {
             group.MapPost(GetPlayerBalanceRoute + "/grants",
@@ -40,7 +39,7 @@ public static class PlayerEndpoints
     }
 
     private static async Task<IResult> GetPlayer(
-        Guid playerId,
+        [FromRoute] Guid playerId,
         BaroDbContext db,
         CancellationToken ct)
     {
@@ -75,8 +74,8 @@ public static class PlayerEndpoints
         }
 
         return Results.CreatedAtRoute(
-            GetPlayerRoute,
-            new {id = newPlayer.Id },
+            nameof(GetPlayerRoute),
+            new {playerId = newPlayer.Id },
             PlayerResponse.From(newPlayer));
     }
 
