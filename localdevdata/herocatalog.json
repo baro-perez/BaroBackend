@@ -1,0 +1,347 @@
+[
+  {
+    "HeroId" : "hero1",
+    "Name" : "Armadilloman",
+    "Health" : { "BaseValue" : 100, "PerevelIncrease" : 10 },
+    "Power" : { "BaseValue" : 50, "PerevelIncrease" : 5 },
+    "Speed" : { "BaseValue" : 75, "PerevelIncrease" : 7 },
+    "LevelUpCosts": [
+      {
+        "Resources": [
+          { "Currency": "hero1_token", "Amount": 10 },
+          { "Currency": "currency_a", "Amount": 10 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero1_token", "Amount": 20 },
+          { "Currency": "currency_a", "Amount": 20 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero1_token", "Amount": 30 },
+          { "Currency": "currency_a", "Amount": 30 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero1_token", "Amount": 40 },
+          { "Currency": "currency_a", "Amount": 40 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero1_token", "Amount": 50 },
+          { "Currency": "currency_a", "Amount": 50 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero1_token", "Amount": 60 },
+          { "Currency": "currency_a", "Amount": 60 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero1_token", "Amount": 70 },
+          { "Currency": "currency_a", "Amount": 70 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero1_token", "Amount": 80 },
+          { "Currency": "currency_a", "Amount": 80 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero1_token", "Amount": 90 },
+          { "Currency": "currency_a", "Amount": 90 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero1_token", "Amount": 100 },
+          { "Currency": "currency_a", "Amount": 100 }
+        ]
+      }
+    ]
+  },
+  {
+    "HeroId" : "hero2",
+    "Name" : "Bearman",
+    "Health" : { "BaseValue" : 50, "PerevelIncrease" : 5 },
+    "Power" : { "BaseValue" : 75, "PerevelIncrease" : 7 },
+    "Speed" : { "BaseValue" : 100, "PerevelIncrease" : 10 },
+    "LevelUpCosts": [
+      {
+        "Resources": [
+          { "Currency": "hero2_token", "Amount": 10 },
+          { "Currency": "currency_a", "Amount": 10 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero2_token", "Amount": 20 },
+          { "Currency": "currency_a", "Amount": 20 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero2_token", "Amount": 30 },
+          { "Currency": "currency_a", "Amount": 30 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero2_token", "Amount": 40 },
+          { "Currency": "currency_a", "Amount": 40 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero2_token", "Amount": 50 },
+          { "Currency": "currency_a", "Amount": 50 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero2_token", "Amount": 60 },
+          { "Currency": "currency_a", "Amount": 60 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero2_token", "Amount": 70 },
+          { "Currency": "currency_a", "Amount": 70 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero2_token", "Amount": 80 },
+          { "Currency": "currency_a", "Amount": 80 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero2_token", "Amount": 90 },
+          { "Currency": "currency_a", "Amount": 90 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero2_token", "Amount": 100 },
+          { "Currency": "currency_a", "Amount": 100 }
+        ]
+      }
+    ]
+  },
+  {
+    "HeroId" : "hero3",
+    "Name" : "Catman",
+    "Health" : { "BaseValue" : 75, "PerevelIncrease" : 7 },
+    "Power" : { "BaseValue" : 100, "PerevelIncrease" : 10 },
+    "Speed" : { "BaseValue" : 50, "PerevelIncrease" : 5 },
+    "LevelUpCosts": [
+      {
+        "Resources": [
+          { "Currency": "hero3_token", "Amount": 10 },
+          { "Currency": "currency_a", "Amount": 10 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero3_token", "Amount": 20 },
+          { "Currency": "currency_a", "Amount": 20 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero3_token", "Amount": 30 },
+          { "Currency": "currency_a", "Amount": 30 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero3_token", "Amount": 40 },
+          { "Currency": "currency_a", "Amount": 40 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero3_token", "Amount": 50 },
+          { "Currency": "currency_a", "Amount": 50 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero3_token", "Amount": 60 },
+          { "Currency": "currency_a", "Amount": 60 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero3_token", "Amount": 70 },
+          { "Currency": "currency_a", "Amount": 70 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero3_token", "Amount": 80 },
+          { "Currency": "currency_a", "Amount": 80 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero3_token", "Amount": 90 },
+          { "Currency": "currency_a", "Amount": 90 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero3_token", "Amount": 100 },
+          { "Currency": "currency_a", "Amount": 100 }
+        ]
+      }
+    ]
+  },
+  {
+    "HeroId" : "hero4",
+    "Name" : "Deerman",
+    "Health" : { "BaseValue" : 50, "PerevelIncrease" : 5 },
+    "Power" : { "BaseValue" : 100, "PerevelIncrease" : 10 },
+    "Speed" : { "BaseValue" : 75, "PerevelIncrease" : 7 },
+    "LevelUpCosts": [
+      {
+        "Resources": [
+          { "Currency": "hero4_token", "Amount": 10 },
+          { "Currency": "currency_a", "Amount": 10 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero4_token", "Amount": 20 },
+          { "Currency": "currency_a", "Amount": 20 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero4_token", "Amount": 30 },
+          { "Currency": "currency_a", "Amount": 30 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero4_token", "Amount": 40 },
+          { "Currency": "currency_a", "Amount": 40 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero4_token", "Amount": 50 },
+          { "Currency": "currency_a", "Amount": 50 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero4_token", "Amount": 60 },
+          { "Currency": "currency_a", "Amount": 60 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero4_token", "Amount": 70 },
+          { "Currency": "currency_a", "Amount": 70 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero4_token", "Amount": 80 },
+          { "Currency": "currency_a", "Amount": 80 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero4_token", "Amount": 90 },
+          { "Currency": "currency_a", "Amount": 90 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero4_token", "Amount": 100 },
+          { "Currency": "currency_a", "Amount": 100 }
+        ]
+      }
+    ]
+  },
+  {
+    "HeroId" : "hero5",
+    "Name" : "Eelman",
+    "Health" : { "BaseValue" : 100, "PerevelIncrease" : 10 },
+    "Power" : { "BaseValue" : 50, "PerevelIncrease" : 5 },
+    "Speed" : { "BaseValue" : 75, "PerevelIncrease" : 7 },
+    "LevelUpCosts": [
+      {
+        "Resources": [
+          { "Currency": "hero5_token", "Amount": 10 },
+          { "Currency": "currency_a", "Amount": 10 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero5_token", "Amount": 20 },
+          { "Currency": "currency_a", "Amount": 20 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero5_token", "Amount": 30 },
+          { "Currency": "currency_a", "Amount": 30 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero5_token", "Amount": 40 },
+          { "Currency": "currency_a", "Amount": 40 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero5_token", "Amount": 50 },
+          { "Currency": "currency_a", "Amount": 50 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero5_token", "Amount": 60 },
+          { "Currency": "currency_a", "Amount": 60 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero5_token", "Amount": 70 },
+          { "Currency": "currency_a", "Amount": 70 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero5_token", "Amount": 80 },
+          { "Currency": "currency_a", "Amount": 80 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero5_token", "Amount": 90 },
+          { "Currency": "currency_a", "Amount": 90 }
+        ]
+      },
+      {
+        "Resources": [
+          { "Currency": "hero5_token", "Amount": 100 },
+          { "Currency": "currency_a", "Amount": 100 }
+        ]
+      }
+    ]
+  }
+]

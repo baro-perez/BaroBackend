@@ -35,3 +35,7 @@ This is a (maybe non-exhaustive) log of the technologies used in this project
 - Tested the migration flow
 - Tweaked table constrains, added citext column, understood owned table relations
 - Implemented tests for the Api (Player endpoints)
+- Introduced a IHeroCatalog with implementations decided in Infrastructure by settings
+- Introduced the Options pattern to handle settings programatically
+- Read a local json file copied during the compilation process
+- Added startup tasks

@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/localdevData/">
+    <File Path="localdevdata/herocatalog.json" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/BaroBackend.Api/BaroBackend.Api.csproj" />
     <Project Path="src/BaroBackend.Domain/BaroBackend.Domain.csproj" />

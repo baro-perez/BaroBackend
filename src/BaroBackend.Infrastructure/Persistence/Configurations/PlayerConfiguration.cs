@@ -19,7 +19,7 @@ internal sealed class PlayerConfiguration : IEntityTypeConfiguration<Player>
         builder.OwnsMany(p => p.Balances, resourceBalanceBuilder =>
         {
             resourceBalanceBuilder.WithOwner().HasForeignKey(PlayerIdKey);
-            resourceBalanceBuilder.HasKey(PlayerIdKey, nameof(ResourceBalance.ResourceId));
+            resourceBalanceBuilder.HasKey(PlayerIdKey, nameof(ResourceAndAmount.ResourceId));
             resourceBalanceBuilder.Property(b => b.ResourceId).HasMaxLength(64);
             resourceBalanceBuilder.ToTable("resource_balances", t =>
             {

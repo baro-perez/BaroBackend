@@ -29,7 +29,7 @@ public static class PlayerEndpoints
         {
             group.MapPost(GetPlayerBalanceRoute + "/modify",
                 (Guid playerId,
-                ResourceAndAmount data,
+                ResourceAndAmountResponse data,
                 BaroDbContext db,
                 TimeProvider time,
                 CancellationToken ct) =>
@@ -102,7 +102,7 @@ public static class PlayerEndpoints
 
     private static async Task<IResult> ModifyResourceByDelta(
         Guid playerId,
-        ResourceAndAmount data,
+        ResourceAndAmountResponse data,
         string context,
         BaroDbContext db,
         TimeProvider time,

@@ -1,5 +1,6 @@
 using BaroBackend.Api;
 using BaroBackend.Domain.Common;
+using BaroBackend.Domain.Metagame.Data;
 using BaroBackend.Infrastructure;
 
 using Scalar.AspNetCore;
@@ -17,11 +18,13 @@ builder.Services.AddSingleton(TimeProvider.System);
 
 var connectionString = builder.Configuration.GetConnectionString("Postgres")
     ?? throw new InvalidOperationException("Missing connection string 'Postgres'.");
-builder.Services.AddInfrastructure(connectionString);
+builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 app.UseExceptionHandler();
 app.UseStatusCodePages();
+
+app.Services.GetRequiredService<IHeroCatalog>();
 
 var appVersion = "0.1";
 
@@ -86,6 +89,10 @@ app.MapGet("/version", (TimeProvider time) =>
     }));
 
 PlayerEndpoints.MapPlayerEndpoints(app, app.Environment);
+
+var startupTasks = app.Services.GetServices<IStartupTask>()
+    .Select(t => t.RunAsync(app.Lifetime.ApplicationStopping));
+await Task.WhenAll(startupTasks);
 
 app.Run();
 

@@ -71,19 +71,19 @@ public sealed class PlayerEndpointsTests(ApiFactory factory)
 
         var responseModifyPlayer1 = await client.PostAsJsonAsync(
             $"/players/{player1.Id}/balances/modify",
-            new ResourceAndAmount(Resources.CurrencyA, 100));
+            new ResourceAndAmountResponse(Resources.CurrencyA, 100));
         Assert.Equal(HttpStatusCode.OK, responseModifyPlayer1.StatusCode);
 
         var responseModifyPlayer2 = await client.PostAsJsonAsync(
             $"/players/{player2.Id}/balances/modify",
-            new ResourceAndAmount(Resources.CurrencyA, 50));
+            new ResourceAndAmountResponse(Resources.CurrencyA, 50));
         Assert.Equal(HttpStatusCode.OK, responseModifyPlayer2.StatusCode);
 
-        var resourceAmounts1 = await client.GetFromJsonAsync<ResourceAndAmount[]>(
+        var resourceAmounts1 = await client.GetFromJsonAsync<ResourceAndAmountResponse[]>(
             $"/players/{player1.Id}/balances");
         Assert.NotNull(resourceAmounts1);
 
-        var resourceAmounts2 = await client.GetFromJsonAsync<ResourceAndAmount[]>(
+        var resourceAmounts2 = await client.GetFromJsonAsync<ResourceAndAmountResponse[]>(
             $"/players/{player1.Id}/balances");
         Assert.NotNull(resourceAmounts2);
 
@@ -106,10 +106,10 @@ public sealed class PlayerEndpointsTests(ApiFactory factory)
 
         var responseModify = await client.PostAsJsonAsync(
             $"/players/{player.Id}/balances/modify",
-            new ResourceAndAmount(Resources.CurrencyA, amount));
+            new ResourceAndAmountResponse(Resources.CurrencyA, amount));
         Assert.Equal(HttpStatusCode.OK, responseModify.StatusCode);
 
-        var resourceAmounts = await client.GetFromJsonAsync<ResourceAndAmount[]>(
+        var resourceAmounts = await client.GetFromJsonAsync<ResourceAndAmountResponse[]>(
             $"/players/{player.Id}/balances");
         Assert.NotNull(resourceAmounts);
 
@@ -132,15 +132,15 @@ public sealed class PlayerEndpointsTests(ApiFactory factory)
 
         var responseModifyA = await client.PostAsJsonAsync(
             $"/players/{player.Id}/balances/modify",
-            new ResourceAndAmount(Resources.CurrencyA, a));
+            new ResourceAndAmountResponse(Resources.CurrencyA, a));
         Assert.Equal(HttpStatusCode.OK, responseModifyA.StatusCode);
 
         var responseModifyB = await client.PostAsJsonAsync(
             $"/players/{player.Id}/balances/modify",
-            new ResourceAndAmount(Resources.CurrencyA, b));
+            new ResourceAndAmountResponse(Resources.CurrencyA, b));
         Assert.Equal(HttpStatusCode.OK, responseModifyB.StatusCode);
 
-        var resourceAmounts = await client.GetFromJsonAsync<ResourceAndAmount[]>(
+        var resourceAmounts = await client.GetFromJsonAsync<ResourceAndAmountResponse[]>(
             $"/players/{player.Id}/balances");
         Assert.NotNull(resourceAmounts);
 
@@ -162,15 +162,15 @@ public sealed class PlayerEndpointsTests(ApiFactory factory)
 
         var responseModifyA = await client.PostAsJsonAsync(
             $"/players/{player.Id}/balances/modify",
-            new ResourceAndAmount(Resources.CurrencyA, a));
+            new ResourceAndAmountResponse(Resources.CurrencyA, a));
         Assert.Equal(HttpStatusCode.OK, responseModifyA.StatusCode);
 
         var responseModifyB = await client.PostAsJsonAsync(
             $"/players/{player.Id}/balances/modify",
-            new ResourceAndAmount(Resources.CurrencyA, -b));
+            new ResourceAndAmountResponse(Resources.CurrencyA, -b));
         Assert.Equal(HttpStatusCode.BadRequest, responseModifyB.StatusCode);
 
-        var resourceAmounts = await client.GetFromJsonAsync<ResourceAndAmount[]>(
+        var resourceAmounts = await client.GetFromJsonAsync<ResourceAndAmountResponse[]>(
             $"/players/{player.Id}/balances");
         Assert.NotNull(resourceAmounts);
 
@@ -196,7 +196,7 @@ public sealed class PlayerEndpointsTests(ApiFactory factory)
         {
             var responseModify = await client.PostAsJsonAsync(
                 $"/players/{player.Id}/balances/modify",
-                new ResourceAndAmount(Resources.CurrencyA, v));
+                new ResourceAndAmountResponse(Resources.CurrencyA, v));
             Assert.Equal(HttpStatusCode.OK, responseModify.StatusCode);
         }
 

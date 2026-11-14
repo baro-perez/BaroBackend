@@ -8,9 +8,11 @@ public sealed class Player
     public string Name { get; private set; } = null!;
     public DateTimeOffset CreatedAt { get; private set; }
 
-    public IReadOnlyCollection<ResourceBalance> Balances => balances;
+    public IReadOnlyCollection<ResourceAndAmount> Balances => balances;
+    public IReadOnlyCollection<PlayerHero> Heroes => heroes;
 
-    private readonly List<ResourceBalance> balances = [];
+    private readonly List<ResourceAndAmount> balances = [];
+    private readonly List<PlayerHero> heroes = [];
 
     private Player() { }
 
@@ -30,6 +32,11 @@ public sealed class Player
         };
     }
 
+    public int GetHeroLevel(string heroId)
+    {
+        return heroes.FirstOrDefault(b => b.HeroId == heroId)?.Level ?? 0;
+    }
+
     public long GetResourceAmount(string resourceId)
     {
         return balances.FirstOrDefault(b => b.ResourceId == resourceId)?.Amount ?? 0;
@@ -46,7 +53,7 @@ public sealed class Player
         var balance = balances.FirstOrDefault(b => b.ResourceId == resourceId);
         if (balance is null)
         {
-            balance = new ResourceBalance(resourceId);
+            balance = new ResourceAndAmount(resourceId);
             balances.Add(balance);
         }
 
