@@ -8,61 +8,61 @@
     "LevelUpCosts": [
       {
         "Resources": [
-          { "Currency": "hero1_token", "Amount": 10 },
+          { "Currency": "token:hero:hero1", "Amount": 10 },
           { "Currency": "currency_a", "Amount": 10 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero1_token", "Amount": 20 },
+          { "Currency": "token:hero:hero1", "Amount": 20 },
           { "Currency": "currency_a", "Amount": 20 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero1_token", "Amount": 30 },
+          { "Currency": "token:hero:hero1", "Amount": 30 },
           { "Currency": "currency_a", "Amount": 30 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero1_token", "Amount": 40 },
+          { "Currency": "token:hero:hero1", "Amount": 40 },
           { "Currency": "currency_a", "Amount": 40 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero1_token", "Amount": 50 },
+          { "Currency": "token:hero:hero1", "Amount": 50 },
           { "Currency": "currency_a", "Amount": 50 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero1_token", "Amount": 60 },
+          { "Currency": "token:hero:hero1", "Amount": 60 },
           { "Currency": "currency_a", "Amount": 60 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero1_token", "Amount": 70 },
+          { "Currency": "token:hero:hero1", "Amount": 70 },
           { "Currency": "currency_a", "Amount": 70 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero1_token", "Amount": 80 },
+          { "Currency": "token:hero:hero1", "Amount": 80 },
           { "Currency": "currency_a", "Amount": 80 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero1_token", "Amount": 90 },
+          { "Currency": "token:hero:hero1", "Amount": 90 },
           { "Currency": "currency_a", "Amount": 90 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero1_token", "Amount": 100 },
+          { "Currency": "token:hero:hero1", "Amount": 100 },
           { "Currency": "currency_a", "Amount": 100 }
         ]
       }
@@ -77,61 +77,61 @@
     "LevelUpCosts": [
       {
         "Resources": [
-          { "Currency": "hero2_token", "Amount": 10 },
+          { "Currency": "token:hero:hero2", "Amount": 10 },
           { "Currency": "currency_a", "Amount": 10 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero2_token", "Amount": 20 },
+          { "Currency": "token:hero:hero2", "Amount": 20 },
           { "Currency": "currency_a", "Amount": 20 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero2_token", "Amount": 30 },
+          { "Currency": "token:hero:hero2", "Amount": 30 },
           { "Currency": "currency_a", "Amount": 30 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero2_token", "Amount": 40 },
+          { "Currency": "token:hero:hero2", "Amount": 40 },
           { "Currency": "currency_a", "Amount": 40 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero2_token", "Amount": 50 },
+          { "Currency": "token:hero:hero2", "Amount": 50 },
           { "Currency": "currency_a", "Amount": 50 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero2_token", "Amount": 60 },
+          { "Currency": "token:hero:hero2", "Amount": 60 },
           { "Currency": "currency_a", "Amount": 60 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero2_token", "Amount": 70 },
+          { "Currency": "token:hero:hero2", "Amount": 70 },
           { "Currency": "currency_a", "Amount": 70 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero2_token", "Amount": 80 },
+          { "Currency": "token:hero:hero2", "Amount": 80 },
           { "Currency": "currency_a", "Amount": 80 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero2_token", "Amount": 90 },
+          { "Currency": "token:hero:hero2", "Amount": 90 },
           { "Currency": "currency_a", "Amount": 90 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero2_token", "Amount": 100 },
+          { "Currency": "token:hero:hero2", "Amount": 100 },
           { "Currency": "currency_a", "Amount": 100 }
         ]
       }
@@ -146,61 +146,61 @@
     "LevelUpCosts": [
       {
         "Resources": [
-          { "Currency": "hero3_token", "Amount": 10 },
+          { "Currency": "token:hero:hero3", "Amount": 10 },
           { "Currency": "currency_a", "Amount": 10 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero3_token", "Amount": 20 },
+          { "Currency": "token:hero:hero3", "Amount": 20 },
           { "Currency": "currency_a", "Amount": 20 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero3_token", "Amount": 30 },
+          { "Currency": "token:hero:hero3", "Amount": 30 },
           { "Currency": "currency_a", "Amount": 30 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero3_token", "Amount": 40 },
+          { "Currency": "token:hero:hero3", "Amount": 40 },
           { "Currency": "currency_a", "Amount": 40 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero3_token", "Amount": 50 },
+          { "Currency": "token:hero:hero3", "Amount": 50 },
           { "Currency": "currency_a", "Amount": 50 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero3_token", "Amount": 60 },
+          { "Currency": "token:hero:hero3", "Amount": 60 },
           { "Currency": "currency_a", "Amount": 60 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero3_token", "Amount": 70 },
+          { "Currency": "token:hero:hero3", "Amount": 70 },
           { "Currency": "currency_a", "Amount": 70 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero3_token", "Amount": 80 },
+          { "Currency": "token:hero:hero3", "Amount": 80 },
           { "Currency": "currency_a", "Amount": 80 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero3_token", "Amount": 90 },
+          { "Currency": "token:hero:hero3", "Amount": 90 },
           { "Currency": "currency_a", "Amount": 90 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero3_token", "Amount": 100 },
+          { "Currency": "token:hero:hero3", "Amount": 100 },
           { "Currency": "currency_a", "Amount": 100 }
         ]
       }
@@ -215,61 +215,61 @@
     "LevelUpCosts": [
       {
         "Resources": [
-          { "Currency": "hero4_token", "Amount": 10 },
+          { "Currency": "token:hero:hero4", "Amount": 10 },
           { "Currency": "currency_a", "Amount": 10 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero4_token", "Amount": 20 },
+          { "Currency": "token:hero:hero4", "Amount": 20 },
           { "Currency": "currency_a", "Amount": 20 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero4_token", "Amount": 30 },
+          { "Currency": "token:hero:hero4", "Amount": 30 },
           { "Currency": "currency_a", "Amount": 30 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero4_token", "Amount": 40 },
+          { "Currency": "token:hero:hero4", "Amount": 40 },
           { "Currency": "currency_a", "Amount": 40 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero4_token", "Amount": 50 },
+          { "Currency": "token:hero:hero4", "Amount": 50 },
           { "Currency": "currency_a", "Amount": 50 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero4_token", "Amount": 60 },
+          { "Currency": "token:hero:hero4", "Amount": 60 },
           { "Currency": "currency_a", "Amount": 60 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero4_token", "Amount": 70 },
+          { "Currency": "token:hero:hero4", "Amount": 70 },
           { "Currency": "currency_a", "Amount": 70 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero4_token", "Amount": 80 },
+          { "Currency": "token:hero:hero4", "Amount": 80 },
           { "Currency": "currency_a", "Amount": 80 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero4_token", "Amount": 90 },
+          { "Currency": "token:hero:hero4", "Amount": 90 },
           { "Currency": "currency_a", "Amount": 90 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero4_token", "Amount": 100 },
+          { "Currency": "token:hero:hero4", "Amount": 100 },
           { "Currency": "currency_a", "Amount": 100 }
         ]
       }
@@ -284,61 +284,61 @@
     "LevelUpCosts": [
       {
         "Resources": [
-          { "Currency": "hero5_token", "Amount": 10 },
+          { "Currency": "token:hero:hero5", "Amount": 10 },
           { "Currency": "currency_a", "Amount": 10 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero5_token", "Amount": 20 },
+          { "Currency": "token:hero:hero5", "Amount": 20 },
           { "Currency": "currency_a", "Amount": 20 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero5_token", "Amount": 30 },
+          { "Currency": "token:hero:hero5", "Amount": 30 },
           { "Currency": "currency_a", "Amount": 30 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero5_token", "Amount": 40 },
+          { "Currency": "token:hero:hero5", "Amount": 40 },
           { "Currency": "currency_a", "Amount": 40 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero5_token", "Amount": 50 },
+          { "Currency": "token:hero:hero5", "Amount": 50 },
           { "Currency": "currency_a", "Amount": 50 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero5_token", "Amount": 60 },
+          { "Currency": "token:hero:hero5", "Amount": 60 },
           { "Currency": "currency_a", "Amount": 60 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero5_token", "Amount": 70 },
+          { "Currency": "token:hero:hero5", "Amount": 70 },
           { "Currency": "currency_a", "Amount": 70 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero5_token", "Amount": 80 },
+          { "Currency": "token:hero:hero5", "Amount": 80 },
           { "Currency": "currency_a", "Amount": 80 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero5_token", "Amount": 90 },
+          { "Currency": "token:hero:hero5", "Amount": 90 },
           { "Currency": "currency_a", "Amount": 90 }
         ]
       },
       {
         "Resources": [
-          { "Currency": "hero5_token", "Amount": 100 },
+          { "Currency": "token:hero:hero5", "Amount": 100 },
           { "Currency": "currency_a", "Amount": 100 }
         ]
       }

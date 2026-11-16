@@ -2,11 +2,15 @@
 
 public static class Resources
 {
-    public const string CurrencyA = "currency_a";
-    public const string CurrencyB = "currency_b";
+    public const string TokenNamePrefix = "<token>";
 
-    public static bool IsValidResourceId(string resourceId)
+    public static string HeroTokenId(string heroId)
     {
-        return resourceId is CurrencyA or CurrencyB;
+        return $"token:hero:{heroId}";
+    }
+
+    public static string HeroTokenName(string heroName)
+    {
+        return $"{TokenNamePrefix}{heroName}";
     }
 }

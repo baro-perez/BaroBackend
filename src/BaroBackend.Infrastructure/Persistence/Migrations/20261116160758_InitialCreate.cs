@@ -19,12 +19,13 @@ namespace BaroBackend.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    name = table.Column<string>(type: "citext", maxLength: 32, nullable: false),
+                    name = table.Column<string>(type: "citext", nullable: false),
                     created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_players", x => x.id);
+                    table.CheckConstraint("ck_players_name_length", "char_length(name) between 3 and 32");
                 });
 
             migrationBuilder.CreateTable(
@@ -33,7 +34,8 @@ namespace BaroBackend.Infrastructure.Persistence.Migrations
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     player_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    resource_id = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    item_id = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    item_type = table.Column<int>(type: "integer", nullable: false),
                     delta = table.Column<long>(type: "bigint", nullable: false),
                     balance_after = table.Column<long>(type: "bigint", nullable: false),
                     reason = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
@@ -48,6 +50,26 @@ namespace BaroBackend.Infrastructure.Persistence.Migrations
                         principalTable: "players",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "player_heroes",
+                columns: table => new
+                {
+                    hero_id = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    player_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    level = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_player_heroes", x => new { x.player_id, x.hero_id });
+                    table.CheckConstraint("ck_player_hero_level_is_positive", "level >= 0");
+                    table.ForeignKey(
+                        name: "fk_player_heroes_players_player_id",
+                        column: x => x.player_id,
+                        principalTable: "players",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -87,6 +109,9 @@ namespace BaroBackend.Infrastructure.Persistence.Migrations
         {
             migrationBuilder.DropTable(
                 name: "ledger_entries");
+
+            migrationBuilder.DropTable(
+                name: "player_heroes");
 
             migrationBuilder.DropTable(
                 name: "resource_balances");

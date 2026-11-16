@@ -7,7 +7,7 @@ public sealed class PlayerHero
 
     private PlayerHero() { }
 
-    internal PlayerHero(string heroId, int level = 0)
+    public PlayerHero(string heroId, int level = 0)
     {
         HeroId = heroId;
         Level = level;

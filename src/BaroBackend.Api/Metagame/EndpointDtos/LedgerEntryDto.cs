@@ -2,7 +2,7 @@ using BaroBackend.Domain.Metagame;
 
 namespace BaroBackend.Api.Metagame.EndpointDtos;
 
-public sealed record LedgerEntryResponse(
+public sealed record LedgerEntryDto(
     Guid Id,
     Guid PlayerId,
     string ResourceId,
@@ -11,12 +11,12 @@ public sealed record LedgerEntryResponse(
     string Reason,
     DateTimeOffset CreatedAt)
 {
-    internal static LedgerEntryResponse? From(LedgerEntry l)
+    internal static LedgerEntryDto From(LedgerEntry l)
     {
-        return new LedgerEntryResponse(
+        return new LedgerEntryDto(
             l.Id,
             l.PlayerId,
-            l.ResourceId,
+            l.ItemId,
             l.Delta,
             l.BalanceAfter,
             l.Reason,

@@ -5,4 +5,17 @@ public sealed record HeroData(
         HeroStatData Health,
         HeroStatData Power,
         HeroStatData Speed,
-        IReadOnlyCollection<Cost> LevelUpCosts);
+        IReadOnlyList<Cost> LevelUpCosts)
+{
+    public Cost GetUnlockCost()
+    {
+        return LevelUpCosts.Count == 0 ? new([]) : LevelUpCosts[0];
+    }
+
+    public Cost GetLevelUpCost(int currentLevel)
+    {
+        return LevelUpCosts.Count < currentLevel
+            ? LevelUpCosts.LastOrDefault() ?? new([])
+            : LevelUpCosts[currentLevel];
+    }
+}

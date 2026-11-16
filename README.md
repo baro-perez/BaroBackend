@@ -39,3 +39,7 @@ This is a (maybe non-exhaustive) log of the technologies used in this project
 - Introduced the Options pattern to handle settings programatically
 - Read a local json file copied during the compilation process
 - Added startup tasks
+- Introduced a IResourceCatalog to validate resource names
+- Catalogs are snapshottable now, in preparation for reloadability
+- Endpoints to unlock and level up heroes
+- TODO: tests for above

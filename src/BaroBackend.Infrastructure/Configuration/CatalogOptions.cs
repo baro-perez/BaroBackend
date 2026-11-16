@@ -10,5 +10,6 @@ public sealed class CatalogOptions
     public const string SectionName = "Catalog";
 
     public string Source { get; init; } = SourceType.LocalJson;
-    public string HeroesPath { get; init; } = "localdata/herocatalog.json";
+    public string HeroesPath { get; init; } = "localdata/hero-catalog.json";
+    public string ResourcesPath { get; init; } = "localdata/resource-catalog.json";
 }

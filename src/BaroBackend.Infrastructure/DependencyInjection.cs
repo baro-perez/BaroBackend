@@ -43,10 +43,17 @@ public static class DependencyInjection
         switch (catalogOptions.Source)
         {
             case CatalogOptions.SourceType.LocalJson:
+                // hero catalog
                 services.AddSingleton<JsonHeroCatalog>();
                 services.AddSingleton<IHeroCatalog>(s => s.GetRequiredService<JsonHeroCatalog>());
                 services.AddSingleton<IStartupTask>(s => 
                     new StartupTask(ct => s.GetRequiredService<JsonHeroCatalog>().Init(ct)));
+
+                // resource catalog
+                services.AddSingleton<JsonResourceCatalog>();
+                services.AddSingleton<IResourceCatalog>(s => s.GetRequiredService<JsonResourceCatalog>());
+                services.AddSingleton<IStartupTask>(s =>
+                    new StartupTask(ct => s.GetRequiredService<JsonResourceCatalog>().Init(ct)));
                 break;
             default:
                 throw new InvalidOperationException(

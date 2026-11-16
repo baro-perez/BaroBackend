@@ -1,10 +1,10 @@
 ﻿namespace BaroBackend.Domain.Metagame;
-
 public sealed class LedgerEntry
 {
     public Guid Id { get; private set; }
     public Guid PlayerId { get; private set; }
-    public string ResourceId { get; private set; } = null!;
+    public string ItemId { get; private set; } = null!;
+    public PlayerItem ItemType { get; private set; }
     public long Delta { get; private set; }
     public long BalanceAfter { get; private set; }
     public string Reason { get; private set; } = null!;
@@ -12,12 +12,19 @@ public sealed class LedgerEntry
 
     private LedgerEntry() { }
 
-    internal LedgerEntry(Guid id, Guid playerId, string resourceId,
-        long delta, long balanceAfter, string reason, DateTimeOffset createdAt)
+    internal LedgerEntry(
+        Guid playerId,
+        string itemId,
+        PlayerItem itemType,
+        long delta,
+        long balanceAfter,
+        string reason,
+        DateTimeOffset createdAt)
     {
-        Id = id;
+        Id = Guid.CreateVersion7();
         PlayerId = playerId;
-        ResourceId = resourceId;
+        ItemId = itemId;
+        ItemType = itemType;
         Delta = delta;
         BalanceAfter = balanceAfter;
         Reason = reason;

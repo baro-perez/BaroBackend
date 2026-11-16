@@ -25,6 +25,7 @@ app.UseExceptionHandler();
 app.UseStatusCodePages();
 
 app.Services.GetRequiredService<IHeroCatalog>();
+app.Services.GetRequiredService<IResourceCatalog>();
 
 var appVersion = "0.1";
 

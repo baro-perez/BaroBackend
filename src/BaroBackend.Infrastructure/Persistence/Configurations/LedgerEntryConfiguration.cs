@@ -10,7 +10,7 @@ internal sealed class LedgerEntryConfiguration : IEntityTypeConfiguration<Ledger
     {
         builder.ToTable("ledger_entries");
         builder.HasKey(e => e.Id);
-        builder.Property(e => e.ResourceId).HasMaxLength(64);
+        builder.Property(e => e.ItemId).HasMaxLength(64);
         builder.Property(e => e.Reason).HasMaxLength(64);
         builder.HasOne<Player>().WithMany()
             .HasForeignKey(e => e.PlayerId)

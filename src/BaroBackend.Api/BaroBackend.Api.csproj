@@ -21,21 +21,9 @@
     <ProjectReference Include="..\BaroBackend.Domain\BaroBackend.Domain.csproj" />
     <ProjectReference Include="..\BaroBackend.Infrastructure\BaroBackend.Infrastructure.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Configuration\" />
-  </ItemGroup>
   
   <ItemGroup>
-    <Content
-      Include="..\..\localdevdata\**" 
-      Link="localdevdata\%(RecursiveDir)%(Filename)%(Extension)"
-      CopyToOutputDirectory="PreserveNewest" 
-      Condition="'$(Configuration)' == 'Debug'" />
-    <None 
-      Include="..\..\localdevdata\**" 
-      Link="localdevdata\%(RecursiveDir)%(Filename)%(Extension)"
-      CopyToOutputDirectory="PreserveNewest" 
-      Condition="'$(Configuration)' == 'Debug'" />
+    <Content Include="..\..\localdevdata\**" Link="localdevdata\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" Condition="'$(Configuration)' == 'Debug'" />
+    <None Include="..\..\localdevdata\**" Link="localdevdata\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" Condition="'$(Configuration)' == 'Debug'" />
   </ItemGroup>
 </Project>

@@ -1,3 +1,5 @@
+namespace BaroBackend.Api.Configuration;
+
 public sealed class CatalogOptions
 {
     public static class SourceType

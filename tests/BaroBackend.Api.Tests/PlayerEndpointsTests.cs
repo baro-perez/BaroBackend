@@ -11,6 +11,8 @@ namespace BaroBackend.Domain.Tests;
 [Collection("api")]
 public sealed class PlayerEndpointsTests(ApiFactory factory)
 {
+    private const string CurrencyA = "currency_a";
+
     private readonly HttpClient client = factory.CreateClient();
 
     [Fact]
@@ -18,12 +20,14 @@ public sealed class PlayerEndpointsTests(ApiFactory factory)
     {
         var name = UniqueName();
 
-        var response = await client.PostAsJsonAsync("/players", new CreatePlayerRequest(name));
+        var response = await client.PostAsJsonAsync(PlayerEndpoints.BasePath, new CreatePlayerDto(name));
+
+        var body = await response.Content.ReadAsStringAsync();
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         var location = response.Headers.Location;
         Assert.NotNull(location);
         var result = await client.GetAsync(location);
-        var response2 = await result.Content.ReadFromJsonAsync<PlayerResponse>();
+        var response2 = await result.Content.ReadFromJsonAsync<PlayerDto>();
         Assert.NotNull(response2);
         Assert.Equal(name, response2.Name);
     }
@@ -32,7 +36,7 @@ public sealed class PlayerEndpointsTests(ApiFactory factory)
     public async Task PostPlayer_NewPlayer_ShortNameRejected()
     {
         var name = "bo";
-        var response = await client.PostAsJsonAsync("/players", new CreatePlayerRequest(name));
+        var response = await client.PostAsJsonAsync(PlayerEndpoints.BasePath, new CreatePlayerDto(name));
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
@@ -40,7 +44,7 @@ public sealed class PlayerEndpointsTests(ApiFactory factory)
     public async Task PostPlayer_NewPlayer_LongNameRejected()
     {
         var name = "0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF";
-        var response = await client.PostAsJsonAsync("/players", new CreatePlayerRequest(name));
+        var response = await client.PostAsJsonAsync(PlayerEndpoints.BasePath, new CreatePlayerDto(name));
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
@@ -50,9 +54,9 @@ public sealed class PlayerEndpointsTests(ApiFactory factory)
     [InlineData("car", "CAR")]
     public async Task PostPlayer_DuplicatePlayer_Fails(string name1, string name2)
     {
-        var response1 = await client.PostAsJsonAsync("/players", new CreatePlayerRequest(name1));
+        var response1 = await client.PostAsJsonAsync(PlayerEndpoints.BasePath, new CreatePlayerDto(name1));
         Assert.Equal(HttpStatusCode.Created, response1.StatusCode);
-        var response2 = await client.PostAsJsonAsync("/players", new CreatePlayerRequest(name2));
+        var response2 = await client.PostAsJsonAsync(PlayerEndpoints.BasePath, new CreatePlayerDto(name2));
         Assert.Equal(HttpStatusCode.Conflict, response2.StatusCode);
     }
 
@@ -60,35 +64,35 @@ public sealed class PlayerEndpointsTests(ApiFactory factory)
     public async Task PostModifications_SingleCurrencyToManyPlayers_AreDifferent()
     {
         var responsePlayer1 = await client.PostAsJsonAsync(
-            "/players", new CreatePlayerRequest(UniqueName()));
-        var player1 = await responsePlayer1.Content.ReadFromJsonAsync<PlayerResponse>();
+            PlayerEndpoints.BasePath, new CreatePlayerDto(UniqueName()));
+        var player1 = await responsePlayer1.Content.ReadFromJsonAsync<PlayerDto>();
         var responsePlayer2 = await client.PostAsJsonAsync(
-            "/players", new CreatePlayerRequest(UniqueName()));
-        var player2 = await responsePlayer2.Content.ReadFromJsonAsync<PlayerResponse>();
+            PlayerEndpoints.BasePath, new CreatePlayerDto(UniqueName()));
+        var player2 = await responsePlayer2.Content.ReadFromJsonAsync<PlayerDto>();
 
         Assert.NotNull(player1);
         Assert.NotNull(player2);
 
         var responseModifyPlayer1 = await client.PostAsJsonAsync(
-            $"/players/{player1.Id}/balances/modify",
-            new ResourceAndAmountResponse(Resources.CurrencyA, 100));
+            PlayerEndpoints.ResolvePlayerBalanceDevModifyRoute(player1.Id),
+            new ResourceAndAmountDto(CurrencyA, 100));
         Assert.Equal(HttpStatusCode.OK, responseModifyPlayer1.StatusCode);
 
         var responseModifyPlayer2 = await client.PostAsJsonAsync(
-            $"/players/{player2.Id}/balances/modify",
-            new ResourceAndAmountResponse(Resources.CurrencyA, 50));
+            PlayerEndpoints.ResolvePlayerBalanceDevModifyRoute(player2.Id),
+            new ResourceAndAmountDto(CurrencyA, 50));
         Assert.Equal(HttpStatusCode.OK, responseModifyPlayer2.StatusCode);
 
-        var resourceAmounts1 = await client.GetFromJsonAsync<ResourceAndAmountResponse[]>(
-            $"/players/{player1.Id}/balances");
+        var resourceAmounts1 = await client.GetFromJsonAsync<ResourceAndAmountDto[]>(
+            PlayerEndpoints.ResolvePlayerBalancesRoute(player1.Id));
         Assert.NotNull(resourceAmounts1);
 
-        var resourceAmounts2 = await client.GetFromJsonAsync<ResourceAndAmountResponse[]>(
-            $"/players/{player1.Id}/balances");
+        var resourceAmounts2 = await client.GetFromJsonAsync<ResourceAndAmountDto[]>(
+            PlayerEndpoints.ResolvePlayerBalancesRoute(player2.Id));
         Assert.NotNull(resourceAmounts2);
 
-        var currency1 = resourceAmounts1.FirstOrDefault(r => r.ResourceId == Resources.CurrencyA);
-        var currency2 = resourceAmounts1.FirstOrDefault(r => r.ResourceId == Resources.CurrencyA);
+        var currency1 = resourceAmounts1.FirstOrDefault(r => r.ResourceId == CurrencyA);
+        var currency2 = resourceAmounts1.FirstOrDefault(r => r.ResourceId == CurrencyA);
         Assert.NotNull(currency1);
         Assert.NotNull(currency2);
         Assert.Equal(100, currency1.Amount);
@@ -100,20 +104,20 @@ public sealed class PlayerEndpointsTests(ApiFactory factory)
     {
         var amount = 100;
         var responsePlayer = await client.PostAsJsonAsync(
-            "/players", new CreatePlayerRequest(UniqueName()));
-        var player = await responsePlayer.Content.ReadFromJsonAsync<PlayerResponse>();
+            PlayerEndpoints.BasePath, new CreatePlayerDto(UniqueName()));
+        var player = await responsePlayer.Content.ReadFromJsonAsync<PlayerDto>();
         Assert.NotNull(player);
 
         var responseModify = await client.PostAsJsonAsync(
-            $"/players/{player.Id}/balances/modify",
-            new ResourceAndAmountResponse(Resources.CurrencyA, amount));
+            PlayerEndpoints.ResolvePlayerBalanceDevModifyRoute(player.Id),
+            new ResourceAndAmountDto(CurrencyA, amount));
         Assert.Equal(HttpStatusCode.OK, responseModify.StatusCode);
 
-        var resourceAmounts = await client.GetFromJsonAsync<ResourceAndAmountResponse[]>(
-            $"/players/{player.Id}/balances");
+        var resourceAmounts = await client.GetFromJsonAsync<ResourceAndAmountDto[]>(
+            PlayerEndpoints.ResolvePlayerBalancesRoute(player.Id));
         Assert.NotNull(resourceAmounts);
 
-        var currency = resourceAmounts.FirstOrDefault(r => r.ResourceId == Resources.CurrencyA);
+        var currency = resourceAmounts.FirstOrDefault(r => r.ResourceId == CurrencyA);
         Assert.NotNull(currency);
         Assert.Equal(amount, currency.Amount);
     }
@@ -126,25 +130,25 @@ public sealed class PlayerEndpointsTests(ApiFactory factory)
     {
         var expected = a + b;
         var responsePlayer = await client.PostAsJsonAsync(
-            "/players", new CreatePlayerRequest(UniqueName()));
-        var player = await responsePlayer.Content.ReadFromJsonAsync<PlayerResponse>();
+            PlayerEndpoints.BasePath, new CreatePlayerDto(UniqueName()));
+        var player = await responsePlayer.Content.ReadFromJsonAsync<PlayerDto>();
         Assert.NotNull(player);
 
         var responseModifyA = await client.PostAsJsonAsync(
-            $"/players/{player.Id}/balances/modify",
-            new ResourceAndAmountResponse(Resources.CurrencyA, a));
+            PlayerEndpoints.ResolvePlayerBalanceDevModifyRoute(player.Id),
+            new ResourceAndAmountDto(CurrencyA, a));
         Assert.Equal(HttpStatusCode.OK, responseModifyA.StatusCode);
 
         var responseModifyB = await client.PostAsJsonAsync(
-            $"/players/{player.Id}/balances/modify",
-            new ResourceAndAmountResponse(Resources.CurrencyA, b));
+            PlayerEndpoints.ResolvePlayerBalanceDevModifyRoute(player.Id),
+            new ResourceAndAmountDto(CurrencyA, b));
         Assert.Equal(HttpStatusCode.OK, responseModifyB.StatusCode);
 
-        var resourceAmounts = await client.GetFromJsonAsync<ResourceAndAmountResponse[]>(
-            $"/players/{player.Id}/balances");
+        var resourceAmounts = await client.GetFromJsonAsync<ResourceAndAmountDto[]>(
+            PlayerEndpoints.ResolvePlayerBalancesRoute(player.Id));
         Assert.NotNull(resourceAmounts);
 
-        var currency = resourceAmounts.FirstOrDefault(r => r.ResourceId == Resources.CurrencyA);
+        var currency = resourceAmounts.FirstOrDefault(r => r.ResourceId == CurrencyA);
         Assert.NotNull(currency);
         Assert.Equal(expected, currency.Amount);
     }
@@ -156,25 +160,25 @@ public sealed class PlayerEndpointsTests(ApiFactory factory)
     {
         Assert.True(b > a, "b > a");
         var responsePlayer = await client.PostAsJsonAsync(
-            "/players", new CreatePlayerRequest(UniqueName()));
-        var player = await responsePlayer.Content.ReadFromJsonAsync<PlayerResponse>();
+            PlayerEndpoints.BasePath, new CreatePlayerDto(UniqueName()));
+        var player = await responsePlayer.Content.ReadFromJsonAsync<PlayerDto>();
         Assert.NotNull(player);
 
         var responseModifyA = await client.PostAsJsonAsync(
-            $"/players/{player.Id}/balances/modify",
-            new ResourceAndAmountResponse(Resources.CurrencyA, a));
+            PlayerEndpoints.ResolvePlayerBalanceDevModifyRoute(player.Id),
+            new ResourceAndAmountDto(CurrencyA, a));
         Assert.Equal(HttpStatusCode.OK, responseModifyA.StatusCode);
 
         var responseModifyB = await client.PostAsJsonAsync(
-            $"/players/{player.Id}/balances/modify",
-            new ResourceAndAmountResponse(Resources.CurrencyA, -b));
+            PlayerEndpoints.ResolvePlayerBalanceDevModifyRoute(player.Id),
+            new ResourceAndAmountDto(CurrencyA, -b));
         Assert.Equal(HttpStatusCode.BadRequest, responseModifyB.StatusCode);
 
-        var resourceAmounts = await client.GetFromJsonAsync<ResourceAndAmountResponse[]>(
-            $"/players/{player.Id}/balances");
+        var resourceAmounts = await client.GetFromJsonAsync<ResourceAndAmountDto[]>(
+            PlayerEndpoints.ResolvePlayerBalancesRoute(player.Id));
         Assert.NotNull(resourceAmounts);
 
-        var currency = resourceAmounts.FirstOrDefault(r => r.ResourceId == Resources.CurrencyA);
+        var currency = resourceAmounts.FirstOrDefault(r => r.ResourceId == CurrencyA);
         Assert.NotNull(currency);
         Assert.Equal(a, currency.Amount);
     }
@@ -188,15 +192,15 @@ public sealed class PlayerEndpointsTests(ApiFactory factory)
     {
         var expected = a + b + c + d + e;
         var responsePlayer = await client.PostAsJsonAsync(
-            "/players", new CreatePlayerRequest(UniqueName()));
-        var player = await responsePlayer.Content.ReadFromJsonAsync<PlayerResponse>();
+            PlayerEndpoints.BasePath, new CreatePlayerDto(UniqueName()));
+        var player = await responsePlayer.Content.ReadFromJsonAsync<PlayerDto>();
         Assert.NotNull(player);
 
         foreach (var v in new[] { a, b, c, d, e })
         {
             var responseModify = await client.PostAsJsonAsync(
-                $"/players/{player.Id}/balances/modify",
-                new ResourceAndAmountResponse(Resources.CurrencyA, v));
+            PlayerEndpoints.ResolvePlayerBalanceDevModifyRoute(player.Id),
+                new ResourceAndAmountDto(CurrencyA, v));
             Assert.Equal(HttpStatusCode.OK, responseModify.StatusCode);
         }
 

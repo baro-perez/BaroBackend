@@ -1,0 +1,10 @@
+[
+  {
+    "ResourceId": "currency_a",
+    "Name": "Coins"
+  },
+  {
+    "ResourceId": "currency_b",
+    "Name": "Gems"
+  }
+]

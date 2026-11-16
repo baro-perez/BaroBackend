@@ -1,13 +1,13 @@
 ﻿namespace BaroBackend.Domain.Metagame;
 
-public sealed record ResourceAndAmount
+public sealed record ResourceBalance
 {
     public string ResourceId { get; private set; } = null!;
     public long Amount { get; private set; }
 
-    private ResourceAndAmount() { }
+    private ResourceBalance() { }
 
-    internal ResourceAndAmount(string resourceId, long amount = 0)
+    internal ResourceBalance(string resourceId, long amount = 0)
     {
         ResourceId = resourceId;
         Amount = amount;
