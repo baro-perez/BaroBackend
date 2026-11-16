@@ -21,8 +21,6 @@ public sealed class PlayerEndpointsTests(ApiFactory factory)
         var name = UniqueName();
 
         var response = await client.PostAsJsonAsync(PlayerEndpoints.BasePath, new CreatePlayerDto(name));
-
-        var body = await response.Content.ReadAsStringAsync();
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         var location = response.Headers.Location;
         Assert.NotNull(location);
