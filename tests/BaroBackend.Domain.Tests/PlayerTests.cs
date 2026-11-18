@@ -1,11 +1,10 @@
 ﻿using BaroBackend.Domain.Common;
 using BaroBackend.Domain.Metagame;
-using BaroBackend.Domain.Metagame.Data;
+using BaroBackend.Domain.Metagame.Data.Catalog;
 
 using Moq;
 
 namespace BaroBackend.Domain.Tests;
-
 public class PlayerTests
 {
     private const string CurrencyA = "currency_a";
@@ -14,27 +13,27 @@ public class PlayerTests
     private static readonly DateTimeOffset Now = new(2026, 11, 11, 12, 0, 0, TimeSpan.Zero);
 
     [Fact]
-    public async Task ApplyResourceDelta_PositiveDelta_UpdatesBalanceAndReturnsLedgerEntry()
+    public void ApplyResourceDelta_PositiveDelta_UpdatesBalanceAndReturnsLedgerEntry()
     {
         var player = Player.Create("player", Now);
 
         Assert.Equal(0, player.GetResourceAmount(CurrencyA));
 
-        var entry = await player.ApplyResourceDelta(CurrencyA, 100, Now, MockResourceCatalog(), "grant");
+        var entry = player.ApplyResourceDelta(CurrencyA, 100, Now, MockResourceCatalog(), "grant");
         Assert.Equal(100, player.GetResourceAmount(CurrencyA));
         Assert.Equal(100, entry.Delta);
         Assert.Equal(100, entry.BalanceAfter);
     }
 
     [Fact]
-    public async Task ApplyResourceDelta_NegativeDelta_IfWouldGoNegativeThrowsAndKeepsBalance()
+    public void ApplyResourceDelta_NegativeDelta_IfWouldGoNegativeThrowsAndKeepsBalance()
     {
         var resourceCatalog = MockResourceCatalog();
 
         var player = Player.Create("player", Now);
-        await player.ApplyResourceDelta(CurrencyA, 50, Now, resourceCatalog, "grant");
+        player.ApplyResourceDelta(CurrencyA, 50, Now, resourceCatalog, "grant");
 
-        await Assert.ThrowsAsync<DomainException>(() => 
+        Assert.Throws<DomainException>(() => 
             player.ApplyResourceDelta(CurrencyA, -80, Now, resourceCatalog, "spend"));
 
         Assert.Equal(50, player.GetResourceAmount(CurrencyA));
@@ -46,39 +45,39 @@ public class PlayerTests
 
         catalogMock
             .Setup(c => c.ResourceIdIsValid(CurrencyA))
-            .Returns(Task.FromResult(true));
+            .Returns(true);
 
         catalogMock
             .Setup(c => c.ResourceIdIsValid(CurrencyB))
-            .Returns(Task.FromResult(true));
+            .Returns(true);
 
         return catalogMock.Object;
     }
 
     [Fact]
-    public async Task ApplyResourceDelta_PositieDelta_DoesNotAffectOtherResource()
+    public void ApplyResourceDelta_PositieDelta_DoesNotAffectOtherResource()
     {
         var player = Player.Create("player", Now);
 
         Assert.Equal(0, player.GetResourceAmount(CurrencyA));
         Assert.Equal(0, player.GetResourceAmount(CurrencyB));
-        await player.ApplyResourceDelta(CurrencyA, 50, Now, MockResourceCatalog(), "grant");
+        player.ApplyResourceDelta(CurrencyA, 50, Now, MockResourceCatalog(), "grant");
         Assert.Equal(50, player.GetResourceAmount(CurrencyA));
         Assert.Equal(0, player.GetResourceAmount(CurrencyB));
     }
 
     [Fact]
-    public async Task ApplyResourceDelta_IncrementalOperations_Accumulate()
+    public void ApplyResourceDelta_IncrementalOperations_Accumulate()
     {
         var player = Player.Create("player", Now);
         var resourceCatalog = MockResourceCatalog();
 
         Assert.Equal(0, player.GetResourceAmount(CurrencyA));
-        await player.ApplyResourceDelta(CurrencyA, 50, Now, resourceCatalog, "grant");
+        player.ApplyResourceDelta(CurrencyA, 50, Now, resourceCatalog, "grant");
         Assert.Equal(50, player.GetResourceAmount(CurrencyA));
-        await player.ApplyResourceDelta(CurrencyA, 50, Now, resourceCatalog, "grant");
+        player.ApplyResourceDelta(CurrencyA, 50, Now, resourceCatalog, "grant");
         Assert.Equal(100, player.GetResourceAmount(CurrencyA));
-        await player.ApplyResourceDelta(CurrencyA, -30, Now, resourceCatalog, "grant");
+        player.ApplyResourceDelta(CurrencyA, -30, Now, resourceCatalog, "grant");
         Assert.Equal(70, player.GetResourceAmount(CurrencyA));
     }
 }

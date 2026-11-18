@@ -14,7 +14,7 @@ public class ExceptionHandler<T>(
         Exception exception,
         CancellationToken ct)
     {
-        if (exception is not DomainException)
+        if (exception is not T)
         {
             return false;
         }

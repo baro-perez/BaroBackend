@@ -1,4 +1,4 @@
-﻿namespace BaroBackend.Domain.Common;
+﻿namespace BaroBackend.Infrastructure.Utils;
 
 public interface IIsReadyChecked
 {

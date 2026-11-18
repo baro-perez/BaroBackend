@@ -1,17 +1,16 @@
 ﻿using System.Text.Json;
 
-using BaroBackend.Domain.Common;
 using BaroBackend.Domain.Metagame.Data;
+using BaroBackend.Domain.Metagame.Data.Catalog;
 using BaroBackend.Infrastructure.Configuration;
 
 using Microsoft.Extensions.Options;
 
 namespace BaroBackend.Infrastructure.Catalog;
-public class JsonHeroCatalog : IHeroCatalog
+
+public class JsonHeroCatalog(IOptions<CatalogOptions> catalogOptions) : IHeroCatalogProvider
 {
     private static readonly JsonSerializerOptions HeroDataSerializerOptions = new(JsonSerializerDefaults.Web);
-
-    private readonly string heroesPath;
 
     private Dictionary<string, HeroData>? heroDatas;
     private DictionaryHeroCatalog? snapshot;
@@ -21,13 +20,9 @@ public class JsonHeroCatalog : IHeroCatalog
 
     public bool IsReady => heroDatas is not null;
 
-    public JsonHeroCatalog(IOptions<CatalogOptions> catalogOptions)
-    {
-        this.heroesPath = Path.Combine(AppContext.BaseDirectory, catalogOptions.Value.HeroesPath);
-    }
-
     public async Task Init(CancellationToken ct)
     {
+        var heroesPath = Path.Combine(AppContext.BaseDirectory, catalogOptions.Value.HeroesPath);
         await using var jsonStream = File.OpenRead(heroesPath);
         var readData = await JsonSerializer.DeserializeAsync<List<HeroData>>(
             jsonStream, HeroDataSerializerOptions, ct);
@@ -47,34 +42,8 @@ public class JsonHeroCatalog : IHeroCatalog
         return IsReady ? Task.CompletedTask : readyTcs.Task;
     }
 
-    public IHeroCatalog GetSnapshot()
+    public IHeroCatalog GetObject()
     {
         return snapshot ??= new DictionaryHeroCatalog(heroDatas ?? []);
-    }
-
-    public Task<IReadOnlyCollection<HeroData>> GetAll()
-    {
-        IReadOnlyCollection<HeroData> result = 
-            heroDatas is null ? [] : heroDatas.Values.ToArray();
-        return Task.FromResult(result);
-    }
-
-    public Task<HeroData?> GetHeroById(string heroId)
-    {
-        return heroDatas is null
-            ? Task.FromResult<HeroData?>(null)
-            : Task.FromResult(heroDatas.TryGetValue(heroId, out var result) ? result : null);
-    }
-
-    public Task<int> GetMaxLevel(string heroId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<bool> HeroIdIsValid(string heroId)
-    {
-        return heroDatas is null
-            ? Task.FromResult(false)
-            : Task.FromResult(heroDatas.ContainsKey(heroId));
     }
 }

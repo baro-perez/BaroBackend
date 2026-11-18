@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using Testcontainers.PostgreSql;
 
-namespace BaroBackend.Domain.Tests;
+namespace BaroBackend.Api.Tests;
 
 public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {

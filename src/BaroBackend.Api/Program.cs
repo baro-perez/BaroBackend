@@ -2,6 +2,8 @@ using BaroBackend.Api;
 using BaroBackend.Domain.Common;
 using BaroBackend.Domain.Metagame.Data;
 using BaroBackend.Infrastructure;
+using BaroBackend.Infrastructure.Catalog;
+using BaroBackend.Infrastructure.Utils;
 
 using Scalar.AspNetCore;
 
@@ -24,8 +26,8 @@ var app = builder.Build();
 app.UseExceptionHandler();
 app.UseStatusCodePages();
 
-app.Services.GetRequiredService<IHeroCatalog>();
-app.Services.GetRequiredService<IResourceCatalog>();
+app.Services.GetRequiredService<IHeroCatalogProvider>();
+app.Services.GetRequiredService<IResourceCatalogProvider>();
 
 var appVersion = "0.1";
 

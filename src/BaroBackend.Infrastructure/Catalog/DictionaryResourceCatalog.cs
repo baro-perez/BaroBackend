@@ -1,47 +1,31 @@
 ﻿using BaroBackend.Domain.Metagame.Data;
+using BaroBackend.Domain.Metagame.Data.Catalog;
 using BaroBackend.Domain.Utils;
 
 namespace BaroBackend.Infrastructure.Catalog;
 
 public class DictionaryResourceCatalog : IResourceCatalog
 {
-    private readonly Dictionary<string, ResourceData> resourceDatas;
-    private DictionaryResourceCatalog? snapshot;
-    public bool IsReady => true;
+    private readonly IReadOnlyDictionary<string, ResourceData> resourceDatas;
 
+    /// <param name="source">Gets copied</param>
     public DictionaryResourceCatalog(IReadOnlyDictionary<string, ResourceData> source)
     {
         this.resourceDatas = source.Clone();
     }
 
-    public IResourceCatalog GetSnapshot()
+    public IReadOnlyCollection<ResourceData> GetAll()
     {
-        return snapshot ??= new DictionaryResourceCatalog(resourceDatas);
+        return resourceDatas is null ? [] : resourceDatas.Values.ToArray();
     }
 
-    public Task WaitUntilReady()
+    public ResourceData? GetResourceById(string resourceId)
     {
-        return Task.CompletedTask;
+        return (resourceDatas?.TryGetValue(resourceId, out var result) ?? false) ? result : null;
     }
 
-    public Task<IReadOnlyCollection<ResourceData>> GetAll()
+    public bool ResourceIdIsValid(string resourceId)
     {
-        IReadOnlyCollection<ResourceData> result =
-            resourceDatas is null ? [] : resourceDatas.Values.ToArray();
-        return Task.FromResult(result);
-    }
-
-    public Task<ResourceData?> GetResourceById(string resourceId)
-    {
-        return resourceDatas is null
-            ? Task.FromResult<ResourceData?>(null)
-            : Task.FromResult(resourceDatas.TryGetValue(resourceId, out var result) ? result : null);
-    }
-
-    public Task<bool> ResourceIdIsValid(string resourceId)
-    {
-        return resourceDatas is null
-            ? Task.FromResult(false)
-            : Task.FromResult(resourceDatas.ContainsKey(resourceId));
+        return resourceDatas?.ContainsKey(resourceId) ?? false;
     }
 }

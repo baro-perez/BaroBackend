@@ -2,6 +2,7 @@
 using BaroBackend.Infrastructure.Catalog;
 using BaroBackend.Infrastructure.Configuration;
 using BaroBackend.Infrastructure.Persistence;
+using BaroBackend.Infrastructure.Utils;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -45,13 +46,13 @@ public static class DependencyInjection
             case CatalogOptions.SourceType.LocalJson:
                 // hero catalog
                 services.AddSingleton<JsonHeroCatalog>();
-                services.AddSingleton<IHeroCatalog>(s => s.GetRequiredService<JsonHeroCatalog>());
+                services.AddSingleton<IHeroCatalogProvider>(s => s.GetRequiredService<JsonHeroCatalog>());
                 services.AddSingleton<IStartupTask>(s => 
                     new StartupTask(ct => s.GetRequiredService<JsonHeroCatalog>().Init(ct)));
 
                 // resource catalog
                 services.AddSingleton<JsonResourceCatalog>();
-                services.AddSingleton<IResourceCatalog>(s => s.GetRequiredService<JsonResourceCatalog>());
+                services.AddSingleton<IResourceCatalogProvider>(s => s.GetRequiredService<JsonResourceCatalog>());
                 services.AddSingleton<IStartupTask>(s =>
                     new StartupTask(ct => s.GetRequiredService<JsonResourceCatalog>().Init(ct)));
                 break;

@@ -3,6 +3,7 @@ using System.Timers;
 using BaroBackend.Api.Metagame.EndpointDtos;
 using BaroBackend.Domain.Metagame;
 using BaroBackend.Domain.Metagame.Data;
+using BaroBackend.Infrastructure.Catalog;
 using BaroBackend.Infrastructure.Persistence;
 
 using Microsoft.AspNetCore.Mvc;
@@ -13,16 +14,19 @@ using Npgsql;
 public static class PlayerEndpoints
 {
     public const string BasePath = "/players";
-    public const string GetPlayerRoute = "/{playerId:guid}";
+    public const string PlayerIdParameter = "{playerId:guid}";
+    public const string GetPlayerRoute = "/" + PlayerIdParameter;
 
     public const string BalanceSuffix = "/balances";
     public const string GetBalancesRoute = GetPlayerRoute + BalanceSuffix;
-    public const string GetBalanceRoute = GetBalancesRoute + "/{resourceId:minlength(1)}";
+    public const string ResourceIdParameter = "{resourceId:minlength(1)}";
+    public const string GetBalanceRoute = GetBalancesRoute + "/" + ResourceIdParameter;
     public const string DevModifySuffix = "/dev-modify";
 
     public const string HeroesSuffix = "/heroes";
     public const string GetHeroesRoute = GetPlayerRoute + HeroesSuffix;
-    public const string GetHeroRoute = GetHeroesRoute + "/{heroId:minlength(1)}";
+    public const string HeroIdParameter = "{heroId:minlength(1)}";
+    public const string GetHeroRoute = GetHeroesRoute + "/" + HeroIdParameter;
     public const string UnlockSuffix = "/unlock";
     public const string GetUnlockHeroRoute = GetHeroRoute + UnlockSuffix;
     public const string LevelUpSuffix = "/level-up";
@@ -32,45 +36,101 @@ public static class PlayerEndpoints
 
     public const string DevToolContext = "dev_tool";
 
+    #region ResolveXRoute
+
     public static string ResolvePlayerRoute(Guid playerId)
+    {
+        return ResolvePlayerRoute(playerId.ToString());
+    }
+    public static string ResolvePlayerRoute(string playerId)
     {
         return $"{BasePath}/{playerId}";
     }
-
     public static string ResolvePlayerBalancesRoute(Guid playerId)
+    {
+        return ResolvePlayerBalancesRoute(playerId.ToString());
+    }
+
+    public static string ResolvePlayerBalancesRoute(string playerId)
     {
         return $"{ResolvePlayerRoute(playerId)}{BalanceSuffix}";
     }
 
     public static string ResolvePlayerBalanceRoute(Guid playerId, string resourceId)
     {
-        return $"{ResolvePlayerRoute(playerId)}{BalanceSuffix}/{resourceId}";
+        return ResolvePlayerBalanceRoute(playerId.ToString(), resourceId);
+    }
+
+    public static string ResolvePlayerBalanceRoute(string playerId, string resourceId)
+    {
+        return $"{ResolvePlayerBalancesRoute(playerId)}/{resourceId}";
     }
 
     public static string ResolvePlayerHeroesRoute(Guid playerId)
     {
+        return ResolvePlayerHeroesRoute(playerId.ToString());
+    }
+    public static string ResolvePlayerHeroesRoute(string playerId)
+    {
         return $"{ResolvePlayerRoute(playerId)}{HeroesSuffix}";
     }
 
+
     public static string ResolvePlayerHeroRoute(Guid playerId, string heroId)
     {
-        return $"{ResolvePlayerRoute(playerId)}{HeroesSuffix}/{heroId}";
+        return ResolvePlayerHeroRoute(playerId.ToString(), heroId);
+    }
+    public static string ResolvePlayerHeroRoute(string playerId, string heroId)
+    {
+        return $"{ResolvePlayerHeroesRoute(playerId)}/{heroId}";
+    }
+
+    public static string ResolvePlayerBuyUnlockHeroRoute(Guid playerId, string heroId)
+    {
+        return ResolvePlayerBuyUnlockHeroRoute(playerId.ToString(), heroId);
+    }
+    public static string ResolvePlayerBuyUnlockHeroRoute(string playerId, string heroId)
+    {
+        return $"{ResolvePlayerHeroRoute(playerId, heroId)}{UnlockSuffix}";
+    }
+
+    public static string ResolvePlayerBuyLevelUpHeroRoute(Guid playerId, string heroId)
+    {
+        return ResolvePlayerBuyLevelUpHeroRoute(playerId.ToString(), heroId);
+    }
+    public static string ResolvePlayerBuyLevelUpHeroRoute(string playerId, string heroId)
+    {
+        return $"{ResolvePlayerHeroRoute(playerId, heroId)}{LevelUpSuffix}";
     }
 
     public static string ResolvePlayerBalanceDevModifyRoute(Guid playerId)
+    {
+        return ResolvePlayerBalanceDevModifyRoute(playerId.ToString());
+    }
+    public static string ResolvePlayerBalanceDevModifyRoute(string playerId)
     {
         return $"{ResolvePlayerRoute(playerId)}{BalanceSuffix}{DevModifySuffix}";
     }
 
     public static string ResolvePlayerHeroesDevUnlockAllRoute(Guid playerId)
     {
-        return $"{ResolvePlayerRoute(playerId)}{HeroesSuffix}{DevUnlockAllSuffix}";
+        return ResolvePlayerHeroesDevUnlockAllRoute(playerId.ToString());
+    }
+    public static string ResolvePlayerHeroesDevUnlockAllRoute(string playerId)
+    {
+        return $"{ResolvePlayerHeroesRoute(playerId)}{DevUnlockAllSuffix}";
     }
 
-    public static string ResolvePlayerHeroesDevUnlockOneRoute(Guid playerId, string heroId)
+    public static string ResolvePlayerHeroesDevUnlockOneRoute(Guid playerId)
     {
-        return $"{ResolvePlayerRoute(playerId)}{HeroesSuffix}/{heroId}{DevUnlockOneSuffix}";
+        return ResolvePlayerHeroesDevUnlockOneRoute(playerId.ToString());
     }
+    public static string ResolvePlayerHeroesDevUnlockOneRoute(string playerId)
+    {
+        return $"{ResolvePlayerHeroesRoute(playerId)}{DevUnlockOneSuffix}";
+    }
+
+    #endregion
 
     public static void MapPlayerEndpoints(
         IEndpointRouteBuilder app,
@@ -99,20 +159,20 @@ public static class PlayerEndpoints
 
     private static async Task<IResult> GetPlayer(
         [FromRoute] Guid playerId,
-        BaroDbContext db,
+        [FromServices] BaroDbContext db,
         CancellationToken ct)
     {
         var player = await db.Players.AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == playerId, ct);
         return player != null ?
             Results.Ok(PlayerDto.From(player)) :
-            Results.NotFound();
+            Results.NotFound($"Player {playerId} doesn't exist");
     }
 
     private static async Task<IResult> CreatePlayer(
-        CreatePlayerDto request,
-        BaroDbContext db,
-        TimeProvider time,
+        [FromBody] CreatePlayerDto request,
+        [FromServices] BaroDbContext db,
+        [FromServices] TimeProvider time,
         CancellationToken ct)
     {
         var now = time.GetUtcNow();
@@ -139,9 +199,9 @@ public static class PlayerEndpoints
     }
 
     private static async Task<IResult> GetPlayerBalance(
-        Guid playerId,
-        string resourceId,
-        BaroDbContext db,
+        [FromRoute] Guid playerId,
+        [FromRoute] string resourceId,
+        [FromServices] BaroDbContext db,
         CancellationToken ct)
     {
         var player = await db.Players
@@ -150,7 +210,7 @@ public static class PlayerEndpoints
 
         if (player is null)
         {
-            return Results.NotFound();
+            return Results.NotFound($"Player {playerId} doesn't exist");
         }
 
         var balance = player.Balances
@@ -158,15 +218,15 @@ public static class PlayerEndpoints
 
         if (balance is null)
         {
-            return Results.NotFound();
+            return Results.NotFound($"Player {playerId}'s balance doesn't exist");
         }
 
         return Results.Ok(ResourceAndAmountDto.From(balance));
     }
 
     private static async Task<IResult> GetPlayerBalances(
-        Guid playerId,
-        BaroDbContext db,
+        [FromRoute] Guid playerId,
+        [FromServices]BaroDbContext db,
         CancellationToken ct)
     {
         var player = await db.Players
@@ -175,7 +235,7 @@ public static class PlayerEndpoints
 
         if (player is null)
         {
-            return Results.NotFound();
+            return Results.NotFound($"Player {playerId} doesn't exist");
         }
 
         var balances = player.Balances
@@ -186,9 +246,9 @@ public static class PlayerEndpoints
     }
 
     private static async Task<IResult> GetPlayerHero(
-        Guid playerId,
-        string heroId,
-        BaroDbContext db,
+        [FromRoute] Guid playerId,
+        [FromRoute] string heroId,
+        [FromServices] BaroDbContext db,
         CancellationToken ct)
     {
         var player = await db.Players
@@ -197,7 +257,7 @@ public static class PlayerEndpoints
 
         if (player is null)
         {
-            return Results.NotFound();
+            return Results.NotFound($"Player {playerId} doesn't exist");
         }
 
         var hero = player.Heroes
@@ -205,15 +265,15 @@ public static class PlayerEndpoints
 
         if (hero is null)
         {
-            return Results.NotFound();
+            return Results.NotFound($"Hero {heroId} in player {playerId} doesn't exist");
         }
 
         return Results.Ok(PlayerHeroDto.From(hero));
     }
 
     private static async Task<IResult> GetPlayerHeroes(
-        Guid playerId,
-        BaroDbContext db,
+        [FromRoute] Guid playerId,
+        [FromServices] BaroDbContext db,
         CancellationToken ct)
     {
         var player = await db.Players
@@ -222,7 +282,7 @@ public static class PlayerEndpoints
 
         if (player is null)
         {
-            return Results.NotFound();
+            return Results.NotFound($"Player {playerId} doesn't exist");
         }
 
         var heroes = player.Heroes
@@ -233,11 +293,11 @@ public static class PlayerEndpoints
     }
 
     private static async Task<IResult> DevModifyResourceByDelta(
-        Guid playerId,
-        ResourceAndAmountDto data,
-        BaroDbContext db,
-        IResourceCatalog resourceCatalog,
-        TimeProvider time,
+        [FromRoute] Guid playerId,
+        [FromBody] ResourceAndAmountDto data,
+        [FromServices] BaroDbContext db,
+        [FromServices] IResourceCatalogProvider resourceCatalogProvider,
+        [FromServices] TimeProvider time,
         CancellationToken ct)
     {
         var player = await db.Players
@@ -245,11 +305,12 @@ public static class PlayerEndpoints
 
         if (player is null)
         {
-            return Results.NotFound();
+            return Results.NotFound($"Player {playerId} doesn't exist");
         }
 
         var now = time.GetUtcNow();
-        var ledgerEntry = await player.ApplyResourceDelta(data.ResourceId,
+        var resourceCatalog = resourceCatalogProvider.GetObject();
+        var ledgerEntry = player.ApplyResourceDelta(data.ResourceId,
             data.Amount, now, resourceCatalog, DevToolContext);
 
         db.LedgerEntries.Add(ledgerEntry);
@@ -258,12 +319,12 @@ public static class PlayerEndpoints
     }
 
     private static async Task<IResult> UnlockHero(
-        Guid playerId,
-        string heroId,
-        IHeroCatalog heroCatalog,
-        IResourceCatalog resourceCatalog,
-        TimeProvider time,
-        BaroDbContext db,
+        [FromRoute] Guid playerId,
+        [FromRoute] string heroId,
+        [FromServices] IHeroCatalogProvider heroCatalogProvider,
+        [FromServices] IResourceCatalogProvider resourceCatalogProvider,
+        [FromServices] TimeProvider time,
+        [FromServices] BaroDbContext db,
         CancellationToken ct)
     {
         var player = await db.Players
@@ -271,7 +332,7 @@ public static class PlayerEndpoints
 
         if (player is null)
         {
-            return Results.NotFound();
+            return Results.NotFound($"Player {playerId} doesn't exist");
         }
 
         if (player.Heroes.Any(h => h.HeroId == heroId))
@@ -279,29 +340,31 @@ public static class PlayerEndpoints
             return Results.Conflict($"Player already has hero '{heroId}'.");
         }
 
-        var heroData = await heroCatalog.GetHeroById(heroId);
+        var heroCatalog = heroCatalogProvider.GetObject();
 
-        if (heroData is null)
-        {
-            return Results.BadRequest($"Can't unlock non-existing hero '{heroId}'.");
-        }
-
-        if (await heroCatalog.HeroIdIsValid(heroId))
+        if (!heroCatalog.HeroIdIsValid(heroId))
         {
             return Results.BadRequest($"Requesting an unlock for non-existent hero: '{heroId}'.");
+        }
+
+        var heroData = heroCatalog.GetHeroById(heroId);
+        if (heroData is null)
+        {
+            return Results.InternalServerError($"Can't unlock non-existing hero '{heroId}'.");
         }
 
         var cost = heroData.GetUnlockCost();
         if (!player.CanSpend(cost))
         {
             // TODO: add all unsatisfied to response
-            return Results.BadRequest($"Lacking some resource for unlocking '{heroId}'.");
+            return Results.UnprocessableEntity($"Lacking some resource for unlocking '{heroId}'.");
         }
 
         // Verified, now do the purchase
         var now = time.GetUtcNow();
         var ledger = new List<LedgerEntry>();
-        var levelUpHeroResult = await player.BuyUnlockHero(
+        var resourceCatalog = resourceCatalogProvider.GetObject();
+        var levelUpHeroResult = player.BuyUnlockHero(
             heroId, heroCatalog, resourceCatalog, now);
 
         db.LedgerEntries.AddRange(levelUpHeroResult.LedgerChanges);
@@ -313,12 +376,12 @@ public static class PlayerEndpoints
     }
 
     private static async Task<IResult> LevelUpHero(
-        Guid playerId,
-        LevelUpHeroDto request,
-        IHeroCatalog heroCatalog,
-        IResourceCatalog resourceCatalog,
-        TimeProvider time,
-        BaroDbContext db,
+        [FromRoute] Guid playerId,
+        [FromRoute] string heroId,
+        [FromServices] IHeroCatalogProvider heroCatalogProvider,
+        [FromServices] IResourceCatalogProvider resourceCatalogProvider,
+        [FromServices] TimeProvider time,
+        [FromServices] BaroDbContext db,
         CancellationToken ct)
     {
         var player = await db.Players
@@ -326,33 +389,35 @@ public static class PlayerEndpoints
 
         if (player is null)
         {
-            return Results.NotFound();
+            return Results.NotFound($"Player {playerId} doesn't exist");
         }
 
-        if (!player.Heroes.Any(h => h.HeroId == request.HeroId))
+        if (!player.Heroes.Any(h => h.HeroId == heroId))
         {
-            return Results.Conflict($"Player doesn't have hero '{request.HeroId}'.");
+            return Results.NotFound($"Player doesn't have hero '{heroId}'.");
         }
 
-        var heroData = await heroCatalog.GetHeroById(request.HeroId);
+        var heroCatalog = heroCatalogProvider.GetObject();
+        var heroData = heroCatalog.GetHeroById(heroId);
         if (heroData is null)
         {
-            return Results.BadRequest($"Can't level up non-existing hero '{request.HeroId}'.");
+            return Results.InternalServerError($"Can't level up non-existing hero '{heroId}'.");
         }
 
-        var currentLevel = player.GetHeroLevel(request.HeroId);
+        var currentLevel = player.GetHeroLevel(heroId);
 
-        var cost = heroData.GetLevelUpCost(currentLevel + 1);
+        var cost = heroData.GetLevelUpCost(currentLevel);
         if (!player.CanSpend(cost))
         {
             // TODO: add all unsatisfied to response
-            return Results.BadRequest($"Lacking some resource for leveling '{request.HeroId}' up to level {currentLevel + 1}.");
+            return Results.UnprocessableEntity($"Lacking some resource for leveling '{heroId}' up to level {currentLevel + 1}.");
         }
 
         // Verified, now do the purchase
         var now = time.GetUtcNow();
-        var levelUpHeroResult = await player.BuyLevelUpHero(
-            request.HeroId, heroCatalog, resourceCatalog, now);
+        var resourceCatalog = resourceCatalogProvider.GetObject();
+        var levelUpHeroResult = player.BuyLevelUpHero(
+            heroId, heroCatalog, resourceCatalog, now);
 
         db.LedgerEntries.AddRange(levelUpHeroResult.LedgerChanges);
         await db.SaveChangesAsync(ct);
@@ -360,11 +425,11 @@ public static class PlayerEndpoints
     }
 
     private static async Task<IResult> DevUnlockOneHero(
-        Guid playerId,
-        PlayerHeroDto request,
-        BaroDbContext db,
-        TimeProvider time,
-        IHeroCatalog heroCatalog,
+        [FromRoute] Guid playerId,
+        [FromBody] PlayerHeroDto request,
+        [FromServices] BaroDbContext db,
+        [FromServices] TimeProvider time,
+        [FromServices] IHeroCatalogProvider heroCatalogProvider,
         CancellationToken ct)
     {
         var player = await db.Players
@@ -372,7 +437,7 @@ public static class PlayerEndpoints
 
         if (player is null)
         {
-            return Results.NotFound();
+            return Results.NotFound($"Player {playerId} doesn't exist");
         }
 
         if (request.Level <= 0)
@@ -385,12 +450,13 @@ public static class PlayerEndpoints
             return Results.Conflict($"Player already had hero '{request.HeroId}'.");
         }
 
-        if (await heroCatalog.HeroIdIsValid(request.HeroId))
+        var heroCatalog = heroCatalogProvider.GetObject();
+        if (!heroCatalog.HeroIdIsValid(request.HeroId))
         {
             return Results.BadRequest($"Requesting an unlock for non-existent hero: '{request.HeroId}'.");
         }
 
-        var levelUpHeroResult = await player.DevUnlockHero(
+        var levelUpHeroResult = player.DevUnlockHero(
             request.HeroId, request.Level, heroCatalog, time.GetUtcNow());
 
         db.LedgerEntries.AddRange(levelUpHeroResult.LedgerChanges);
@@ -402,11 +468,10 @@ public static class PlayerEndpoints
     }
 
     private static async Task<IResult> DevUnlockAllHeroes(
-        Guid playerId,
-        string context,
-        BaroDbContext db,
-        TimeProvider time,
-        IHeroCatalog heroCatalog,
+        [FromRoute] Guid playerId,
+        [FromServices] BaroDbContext db,
+        [FromServices] TimeProvider time,
+        [FromServices] IHeroCatalogProvider heroCatalogProvider,
         CancellationToken ct)
     {
         var player = await db.Players
@@ -414,18 +479,19 @@ public static class PlayerEndpoints
 
         if (player is null)
         {
-            return Results.NotFound();
+            return Results.NotFound($"Player {playerId} doesn't exist");
         }
 
         var results = new List<LevelUpHeroResult>();
         var now = time.GetUtcNow();
-        foreach(var heroData in await heroCatalog.GetAll())
+        var heroCatalog = heroCatalogProvider.GetObject();
+        foreach (var heroData in heroCatalog.GetAll())
         {
             if (player.Heroes.Any(h => h.HeroId == heroData.HeroId))
             {
                 continue;
             }
-            var hero = await player.DevUnlockHero(heroData.HeroId, 1, heroCatalog, now);
+            var hero = player.DevUnlockHero(heroData.HeroId, 1, heroCatalog, now);
             results.Add(hero);
         }
 

@@ -1,5 +1,6 @@
 ﻿using BaroBackend.Domain.Common;
 using BaroBackend.Domain.Metagame.Data;
+using BaroBackend.Domain.Metagame.Data.Catalog;
 
 namespace BaroBackend.Domain.Metagame;
 
@@ -43,7 +44,7 @@ public sealed class Player
         return balances.FirstOrDefault(b => b.ResourceId == resourceId)?.Amount ?? 0;
     }
 
-    public async Task<LedgerEntry> ApplyResourceDelta(
+    public LedgerEntry ApplyResourceDelta(
         string resourceId,
         long delta,
         DateTimeOffset now,
@@ -55,70 +56,61 @@ public sealed class Player
             throw new DomainException("Delta cannot be zero.");
         }
 
-        resourceCatalog = resourceCatalog.GetSnapshot();
-        if (!await resourceCatalog.ResourceIdIsValid(resourceId))
+        if (!resourceCatalog.ResourceIdIsValid(resourceId))
         {
             throw new DomainException("Delta cannot be zero.");
         }
 
         var balance = balances.FirstOrDefault(b => b.ResourceId == resourceId);
+        var currentAmount = balance?.Amount ?? 0;
+        var newAmount = checked(currentAmount + delta);
+        if (newAmount < 0)
+        {
+            throw new DomainException($"Insufficient {resourceId}: have {currentAmount}, need {-delta}.");
+        }
+
         if (balance is null)
         {
             balance = new ResourceBalance(resourceId);
             balances.Add(balance);
         }
-
-        var newAmount = checked(balance.Amount + delta);
-        if (newAmount < 0)
-        {
-            throw new DomainException($"Insufficient {resourceId}: have {balance.Amount}, need {-delta}.");
-        }
-
         balance.Set(newAmount);
+
         return new LedgerEntry(Id, 
             resourceId, PlayerItem.Resource, delta, newAmount, context, now);
     }
 
     public bool CanSpend(Cost cost, IList<ResourceCostDiscrepancy>? unsatisfied = null)
     {
-        bool result = true;
-        foreach (var resourceCost in cost.Resources)
-        {
-            var current = GetResourceAmount(resourceCost.ResourceId);
-            if (current < resourceCost.Amount)
-            {
-                result = false;
-                unsatisfied?.Add(new(resourceCost.ResourceId, resourceCost.Amount, current));
-            }
-        }
-
-        return result;
+        return cost.IsAffordable(GetResourceAmount, unsatisfied);
     }
 
-    public async Task<LevelUpHeroResult> DevUnlockHero(
+    public LevelUpHeroResult DevUnlockHero(
         string heroId, 
         int level,
         IHeroCatalog heroCatalog,
         DateTimeOffset now)
     {
+        if (level <= 0)
+        {
+            throw new DomainException($"Can't unlock at level 0, hero levels start at 1");
+        }
         if (heroes.Any(h => h.HeroId == heroId))
         {
             throw new DomainException($"Player already had hero '{heroId}'.");
         }
 
-        heroCatalog = heroCatalog.GetSnapshot();
-
-        if (await heroCatalog.HeroIdIsValid(heroId))
+        if (!heroCatalog.HeroIdIsValid(heroId))
         {
             throw new DomainException($"Requesting an unlock for non-existent hero: '{heroId}'.");
         }
 
         var hero = new PlayerHero(heroId, level);
         heroes.Add(hero);
-        return new(hero, [new LedgerEntry(Id, heroId, PlayerItem.Hero, 1, 1, nameof(DevUnlockHero), now)]);
+        return new(hero, [new LedgerEntry(Id, heroId, PlayerItem.Hero, level, level, nameof(DevUnlockHero), now)]);
     }
 
-    public async Task<LevelUpHeroResult> BuyUnlockHero(
+    public LevelUpHeroResult BuyUnlockHero(
         string heroId,
         IHeroCatalog heroCatalog,
         IResourceCatalog resourceCatalog,
@@ -129,35 +121,31 @@ public sealed class Player
             throw new DomainException($"Player already had hero '{heroId}'.");
         }
 
-        heroCatalog = heroCatalog.GetSnapshot();
-
-        var heroData = await heroCatalog.GetHeroById(heroId);
+        var heroData = heroCatalog.GetHeroById(heroId);
         if (heroData is null)
         {
             throw new DomainException($"Requesting an unlock for non-existent hero: '{heroId}'.");
         }
 
-        resourceCatalog = resourceCatalog.GetSnapshot();
-
         var cost = heroData.GetUnlockCost();
         var ledger = new List<LedgerEntry>();
         foreach (var resourceCost in cost.Resources)
         {
-            var newLedgerEntry = await ApplyResourceDelta(
-                resourceCost.ResourceId, resourceCost.Amount, now,
+            var newLedgerEntry = ApplyResourceDelta(
+                resourceCost.ResourceId, -resourceCost.Amount, now,
                 resourceCatalog,
-                $"purchase {heroId}");
+                GetLedgerReasonBuyUnlockHero(heroId));
 
             ledger.Add(newLedgerEntry);
         }
 
         var hero = new PlayerHero(heroId, 1);
         heroes.Add(hero);
-        ledger.Add(new(Id, heroId, PlayerItem.Hero, 1, 1, nameof(BuyUnlockHero), now));
+        ledger.Add(new(Id, heroId, PlayerItem.Hero, 1, 1, GetLedgerReasonBuyUnlockHero(heroId), now));
         return new(hero, ledger);
     }
 
-    public async Task<LevelUpHeroResult> BuyLevelUpHero(
+    public LevelUpHeroResult BuyLevelUpHero(
         string heroId,
         IHeroCatalog heroCatalog,
         IResourceCatalog resourceCatalog,
@@ -169,30 +157,36 @@ public sealed class Player
             throw new DomainException($"Player doesn't have hero '{heroId}'.");
         }
 
-        heroCatalog = heroCatalog.GetSnapshot();
-
-        var heroData = await heroCatalog.GetHeroById(heroId);
+        var heroData = heroCatalog.GetHeroById(heroId);
         if (heroData is null)
         {
             throw new DomainException($"Requesting a level up but hero doesn't exist in the catalog: '{heroId}'.");
         }
 
-        resourceCatalog = resourceCatalog.GetSnapshot();
-
         var ledger = new List<LedgerEntry>();
         var cost = heroData.GetLevelUpCost(hero.Level);
         foreach (var resourceCost in cost.Resources)
         {
-            var newLedgerEntry = await ApplyResourceDelta(
-                resourceCost.ResourceId, resourceCost.Amount, now,
+            var newLedgerEntry = ApplyResourceDelta(
+                resourceCost.ResourceId, -resourceCost.Amount, now,
                 resourceCatalog,
-                $"purchase {heroId}");
+                GetLedgerReasonBuyLevelUpHero(heroId));
 
             ledger.Add(newLedgerEntry);
         }
 
         hero.LevelUp();
-        ledger.Add(new(Id, heroId, PlayerItem.Hero, 1, hero.Level, nameof(BuyLevelUpHero), now));
+        ledger.Add(new(Id, heroId, PlayerItem.Hero, 1, hero.Level, GetLedgerReasonBuyLevelUpHero(heroId), now));
         return new(hero, ledger);
+    }
+
+    public static string GetLedgerReasonBuyLevelUpHero(string heroId)
+    {
+        return $"levelup {heroId}";
+    }
+
+    public static string GetLedgerReasonBuyUnlockHero(string heroId)
+    {
+        return $"purchase {heroId}";
     }
 }

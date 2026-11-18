@@ -1,4 +1,4 @@
-﻿namespace BaroBackend.Infrastructure;
+﻿namespace BaroBackend.Infrastructure.Utils;
 
 public interface IStartupTask
 {

@@ -1,4 +1,4 @@
-﻿namespace BaroBackend.Infrastructure;
+﻿namespace BaroBackend.Infrastructure.Utils;
 
 public sealed class StartupTask(Func<CancellationToken, Task> run) : IStartupTask
 {

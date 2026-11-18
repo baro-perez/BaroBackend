@@ -42,4 +42,4 @@ This is a (maybe non-exhaustive) log of the technologies used in this project
 - Introduced a IResourceCatalog to validate resource names
 - Catalogs are snapshottable now, in preparation for reloadability
 - Endpoints to unlock and level up heroes
-- TODO: tests for above
+- Tests for above
