@@ -82,6 +82,11 @@ namespace BaroBackend.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<long>("DbRevision")
+                        .IsConcurrencyToken()
+                        .HasColumnType("bigint")
+                        .HasColumnName("db_revision");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("citext")

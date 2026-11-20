@@ -1,4 +1,6 @@
-﻿using BaroBackend.Domain.Common;
+﻿using System.ComponentModel.DataAnnotations;
+
+using BaroBackend.Domain.Common;
 using BaroBackend.Domain.Metagame.Data;
 using BaroBackend.Domain.Metagame.Data.Catalog;
 
@@ -9,6 +11,9 @@ public sealed class Player
     public Guid Id { get; private set; }
     public string Name { get; private set; } = null!;
     public DateTimeOffset CreatedAt { get; private set; }
+
+    public const string DbRevisionFieldName = nameof(DbRevision);
+    private long DbRevision { get; set; }
 
     public IReadOnlyCollection<ResourceBalance> Balances => balances;
     public IReadOnlyCollection<PlayerHero> Heroes => heroes;
@@ -32,6 +37,11 @@ public sealed class Player
             Name = name,
             CreatedAt = now
         };
+    }
+
+    private void DbTouch()
+    {
+        ++DbRevision;
     }
 
     public int GetHeroLevel(string heroId)
@@ -76,6 +86,7 @@ public sealed class Player
         }
         balance.Set(newAmount);
 
+        DbTouch();
         return new LedgerEntry(Id, 
             resourceId, PlayerItem.Resource, delta, newAmount, context, now);
     }
@@ -107,6 +118,8 @@ public sealed class Player
 
         var hero = new PlayerHero(heroId, level);
         heroes.Add(hero);
+
+        DbTouch();
         return new(hero, [new LedgerEntry(Id, heroId, PlayerItem.Hero, level, level, nameof(DevUnlockHero), now)]);
     }
 
@@ -142,6 +155,8 @@ public sealed class Player
         var hero = new PlayerHero(heroId, 1);
         heroes.Add(hero);
         ledger.Add(new(Id, heroId, PlayerItem.Hero, 1, 1, GetLedgerReasonBuyUnlockHero(heroId), now));
+
+        DbTouch();
         return new(hero, ledger);
     }
 
@@ -177,6 +192,8 @@ public sealed class Player
 
         hero.LevelUp();
         ledger.Add(new(Id, heroId, PlayerItem.Hero, 1, hero.Level, GetLedgerReasonBuyLevelUpHero(heroId), now));
+
+        DbTouch();
         return new(hero, ledger);
     }
 

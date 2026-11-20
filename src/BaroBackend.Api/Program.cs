@@ -12,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<ExceptionHandler<ApiException>>();
 builder.Services.AddExceptionHandler<ExceptionHandler<DomainException>>();
+builder.Services.AddExceptionHandler<DbUpdateConcurrencyExceptionHandler>();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

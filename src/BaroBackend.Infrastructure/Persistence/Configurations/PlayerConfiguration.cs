@@ -16,6 +16,9 @@ internal sealed class PlayerConfiguration : IEntityTypeConfiguration<Player>
             .IsRequired();
         builder.HasIndex(p => p.Name).IsUnique();
 
+        builder.Property<long>(Player.DbRevisionFieldName)
+            .IsConcurrencyToken();
+
         builder.OwnsMany(p => p.Balances, resourceBalanceBuilder =>
         {
             resourceBalanceBuilder.WithOwner().HasForeignKey(PlayerIdKey);

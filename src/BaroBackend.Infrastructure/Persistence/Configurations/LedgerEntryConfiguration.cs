@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BaroBackend.Domain.Metagame;
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using BaroBackend.Domain.Metagame;
 
 namespace BaroBackend.Infrastructure.Persistence.Configurations;
 
@@ -16,5 +18,23 @@ internal sealed class LedgerEntryConfiguration : IEntityTypeConfiguration<Ledger
             .HasForeignKey(e => e.PlayerId)
             .OnDelete(DeleteBehavior.Restrict);
         builder.HasIndex(e => new { e.PlayerId, e.CreatedAt });
+
+        // Immutability for every property
+        builder.Property(e => e.Id).Metadata
+            .SetAfterSaveBehavior(PropertySaveBehavior.Throw);
+        builder.Property(e => e.PlayerId).Metadata
+            .SetAfterSaveBehavior(PropertySaveBehavior.Throw);
+        builder.Property(e => e.ItemType).Metadata
+            .SetAfterSaveBehavior(PropertySaveBehavior.Throw);
+        builder.Property(e => e.ItemId).Metadata
+            .SetAfterSaveBehavior(PropertySaveBehavior.Throw);
+        builder.Property(e => e.CreatedAt).Metadata
+            .SetAfterSaveBehavior(PropertySaveBehavior.Throw);
+        builder.Property(e => e.BalanceAfter).Metadata
+            .SetAfterSaveBehavior(PropertySaveBehavior.Throw);
+        builder.Property(e => e.Delta).Metadata
+            .SetAfterSaveBehavior(PropertySaveBehavior.Throw);
+        builder.Property(e => e.Reason).Metadata
+            .SetAfterSaveBehavior(PropertySaveBehavior.Throw);
     }
 }

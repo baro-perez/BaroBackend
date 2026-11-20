@@ -1,4 +1,5 @@
 using BaroBackend.Domain.Common;
+
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,12 +26,17 @@ public class ExceptionHandler<T>(
         {
             HttpContext = context,
             Exception = exception,
-            ProblemDetails = new ProblemDetails
-            {
-                Status = StatusCodes.Status400BadRequest,
-                Title = nameof(DomainException),
-                Detail = exception.Message
-            }
+            ProblemDetails = CreateDetails(exception)
         });
+    }
+
+    public virtual ProblemDetails CreateDetails(Exception exception)
+    {
+        return new ProblemDetails
+        {
+            Status = StatusCodes.Status400BadRequest,
+            Title = nameof(DomainException),
+            Detail = exception.Message
+        };
     }
 }

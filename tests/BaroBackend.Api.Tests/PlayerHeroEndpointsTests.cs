@@ -1,11 +1,15 @@
 ﻿using System.Net;
+using System.Numerics;
+using System.Security.Cryptography;
 
 using BaroBackend.Api.Metagame.EndpointDtos;
 using BaroBackend.Domain.Metagame;
+using BaroBackend.Domain.Metagame.Data;
 using BaroBackend.Domain.Metagame.Data.Catalog;
 using BaroBackend.Infrastructure.Catalog;
 using BaroBackend.Infrastructure.Persistence;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BaroBackend.Api.Tests;
@@ -15,7 +19,7 @@ public sealed class PlayerHeroEndpointsTests(ApiFactory factory)
 {
     private readonly HttpClient client = factory.CreateClient();
     private readonly IHeroCatalog? heroCatalog = (factory.Services.GetService(typeof(IHeroCatalogProvider)) as IHeroCatalogProvider)?.GetObject();
-    private readonly IResourceCatalog? resourcesCatalog = (factory.Services.GetService(typeof(IResourceCatalogProvider)) as IResourceCatalogProvider)?.GetObject();
+    private readonly IResourceCatalog? resourceCatalog = (factory.Services.GetService(typeof(IResourceCatalogProvider)) as IResourceCatalogProvider)?.GetObject();
 
     private const string Hero1Id = "hero1";
     private const string CurrencyA = "currency_a";
@@ -175,7 +179,51 @@ public sealed class PlayerHeroEndpointsTests(ApiFactory factory)
     }
 
     [Fact]
-    public async Task PostLevelUpHero_Concurrent_OnlyOneSucceeds()
+    public async Task PostLevelUpHero_ConcurrentLevelUpDeterministic_Throws()
+    {
+        var player = await CreatePlayer(TestUtils.UniquePlayerName());
+        const int currentLevel = 3;
+        await GrantHero(player, Hero1Id, currentLevel);
+
+        // Grant level up cost
+        Assert.NotNull(heroCatalog);
+        Assert.NotNull(resourceCatalog);
+        var cost = heroCatalog.GetHeroById(Hero1Id)?.GetLevelUpCost(currentLevel);
+        await GrantCostToPlayer(player, cost);
+
+        using var scopeA = factory.Services.CreateScope();
+        using var scopeB = factory.Services.CreateScope();
+        var dbA = scopeA.ServiceProvider.GetRequiredService<BaroDbContext>();
+        var dbB = scopeB.ServiceProvider.GetRequiredService<BaroDbContext>();
+
+        var playerA = dbA.Players.FirstOrDefault(p => p.Id == player.Id);
+        var playerB = dbB.Players.FirstOrDefault(p => p.Id == player.Id);
+        Assert.NotNull(playerA);
+        Assert.NotNull(playerB);
+
+        var now = new DateTimeOffset(2026, 11, 11, 12, 0, 0, TimeSpan.Zero);
+
+        // First operation succeeds
+        playerA.BuyLevelUpHero(Hero1Id, heroCatalog, resourceCatalog, now);
+        await dbA.SaveChangesAsync();
+        playerB.BuyLevelUpHero(Hero1Id, heroCatalog, resourceCatalog, now);
+
+        // Assert
+        await Assert.ThrowsAsync<DbUpdateConcurrencyException>(
+            () => dbB.SaveChangesAsync());
+    }
+
+    [Theory]
+    [InlineData(5, 30)]
+    public async Task PostLevelUpHero_ConcurrentLevelUp_Throws(int loops, int concurrentTasks)
+    {
+        for (int i = 0; i < loops; ++i)
+        {
+            await PostLevelUpHero_ConcurrentLevelUp_Throws_Implementation(concurrentTasks);
+        }
+    }
+
+    private async Task PostLevelUpHero_ConcurrentLevelUp_Throws_Implementation(int concurrentTasks)
     {
         var player = await CreatePlayer(TestUtils.UniquePlayerName());
         const int currentLevel = 3;
@@ -188,7 +236,7 @@ public sealed class PlayerHeroEndpointsTests(ApiFactory factory)
 
         var levelUpUri = PlayerEndpoints.ResolvePlayerBuyLevelUpHeroRoute(player.Id, Hero1Id);
         var gate = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-        var tasks = Enumerable.Range(0, 20).Select(
+        var tasks = Enumerable.Range(0, concurrentTasks).Select(
             async _ => 
             {
                 await gate.Task;
