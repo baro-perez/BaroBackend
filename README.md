@@ -43,3 +43,4 @@ This is a (maybe non-exhaustive) log of the technologies used in this project
 - Catalogs are snapshottable now, in preparation for reloadability
 - Endpoints to unlock and level up heroes
 - Tests for above
+- Optimisitc concurrency for Player, tested
